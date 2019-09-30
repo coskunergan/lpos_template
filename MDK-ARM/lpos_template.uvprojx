@@ -396,6 +396,11 @@
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
             <File>
+              <FileName>lib_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\lib_port.c</FilePath>
+            </File>
+            <File>
               <FileName>freertos.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/freertos.c</FilePath>
