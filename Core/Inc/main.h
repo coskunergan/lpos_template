@@ -32,7 +32,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
- #include "lib_port.h"
+#include "sys_lib.h"
+#include "sys_isr.h"
+#include "sys_list.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

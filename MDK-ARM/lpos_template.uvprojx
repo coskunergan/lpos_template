@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32L476xx,USE_HAL_DRIVER,STM32L476xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32L4xx_HAL_Driver/Inc;../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;    ../Drivers/STM32L4xx_HAL_Driver/Inc;    ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;    ../Middlewares/Third_Party/FreeRTOS/Source/include;    ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;    ../Drivers/CMSIS/Device/ST/STM32L4xx/Include;    ../Drivers/CMSIS/Include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -396,9 +396,19 @@
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
             <File>
-              <FileName>lib_port.c</FileName>
+              <FileName>sys_lib.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Src\lib_port.c</FilePath>
+              <FilePath>..\Core\Src\sys_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sys_isr.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sys_list.c</FilePath>
             </File>
             <File>
               <FileName>freertos.c</FileName>
@@ -574,6 +584,46 @@
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Libraries</GroupName>
+          <Files>
+            <File>
+              <FileName>lib_leds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_leds\lib_leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_buzzer\lib_buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_buttons.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_buttons\lib_buttons.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Hardware</GroupName>
+          <Files>
+            <File>
+              <FileName>hw_leds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_leds\hw_leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_buzzer\hw_buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_buttons.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_buttons\hw_buttons.c</FilePath>
             </File>
           </Files>
         </Group>
