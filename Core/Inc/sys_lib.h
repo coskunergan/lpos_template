@@ -28,6 +28,7 @@ static void func(void); \
 __attribute__((used, section(".lib_obj"))) \
 static Lib_Start_List_t lib_start = { LIB_PORT_KEY, &func };
 
+
 void SysLib_Init(void);
 
 #ifdef __cplusplus

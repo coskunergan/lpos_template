@@ -396,21 +396,6 @@
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
             <File>
-              <FileName>sys_lib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\sys_lib.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys_isr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\sys_isr.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys_list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\sys_list.c</FilePath>
-            </File>
-            <File>
               <FileName>freertos.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/freertos.c</FilePath>
@@ -588,6 +573,26 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>System</GroupName>
+          <Files>
+            <File>
+              <FileName>sys_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sys_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sys_isr.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sys_list.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Libraries</GroupName>
           <Files>
             <File>
@@ -624,6 +629,16 @@
               <FileName>hw_buttons.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\lib_buttons\hw_buttons.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Board</GroupName>
+          <Files>
+            <File>
+              <FileName>pin_defines.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\pin_defines.h</FilePath>
             </File>
           </Files>
         </Group>
