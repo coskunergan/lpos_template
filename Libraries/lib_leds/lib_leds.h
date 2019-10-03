@@ -26,8 +26,6 @@ typedef enum
 {
     eLEDS_CONFIG_INIT,
     eLEDS_CONFIG_DEINIT,
-    eLEDS_CONFIG_DISABLE,
-    eLEDS_CONFIG_ENABLE,
     eLEDS_CONFIG_NUMBEROFTYPES
 } Led_Config_t;
 

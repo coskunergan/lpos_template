@@ -14,9 +14,7 @@
 extern "C" {
 #endif
 
-#include "main.h"
-
-void Buttons_Hw_Init(void);
+ 
 
 #ifdef __cplusplus
 }

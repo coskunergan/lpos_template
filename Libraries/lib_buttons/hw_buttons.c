@@ -6,7 +6,9 @@
  *  Author: Coskun ERGAN
  */
 
+#include "lib_buttons.h"
 #include "hw_buttons.h"
+#include "pin_defines.h"
 /*********************************************************/
 void Button_Hw_Init(void)
 {

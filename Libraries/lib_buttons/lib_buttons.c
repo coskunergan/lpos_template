@@ -13,6 +13,9 @@ FIRST_START_OS(Lib_Init);
 //__weak osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id, void *cb_func);
 
 static osMessageQueueId_t mq_id;
+
+static void StartTask(void *argument);
+
 Button_List_t Button_CbFunc_List[eBUTTON_ID_NUMBEROFTYPE];
 
 /*********************************************************/
@@ -21,6 +24,13 @@ Button_List_t Button_CbFunc_List[eBUTTON_ID_NUMBEROFTYPE];
 static void Lib_Init(void)
 {
     mq_id = osMessageQueueNew(3, sizeof(Buttons_Config_Frame_t) * 3, NULL);
+	
+		const osThreadAttr_t defaultTask_attributes = {
+    .name = "ButtonsTask",
+    .priority = (osPriority_t) osPriorityNormal,
+    .stack_size = 128
+		};
+		osThreadNew(StartTask, NULL, &defaultTask_attributes);			
 }
 /*********************************************************/
 osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id, void *cb_func)
@@ -39,7 +49,13 @@ osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id,
     return osErrorNoMemory;
 }
 /*********************************************************/
-
+static void StartTask(void *argument)
+{ 	
+  for(;;)
+  {
+    osDelay(1);
+  } 
+}
 //	  if(SysList_Length((list_t)&Button_CbFunc_List[button_id]) == 0)
 //    {
 //        SysList_Init((list_t)&Button_CbFunc_List[button_id]);

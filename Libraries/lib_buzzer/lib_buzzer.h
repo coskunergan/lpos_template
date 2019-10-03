@@ -31,10 +31,15 @@ typedef enum
 {
     eBUZZER_CONFIG_INIT,
     eBUZZER_CONFIG_DEINIT,
-    eBUZZER_CONFIG_DISABLE,
-    eBUZZER_CONFIG_ENABLE,
     eBUZZER_CONFIG_NUMBEROFTYPES
 } Buzzer_Config_t;
+
+typedef enum
+{
+    eON,
+    eOFF,
+    eTOGGLE,        
+} Buzzer_State_t;
 
 typedef struct
 {

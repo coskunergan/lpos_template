@@ -13,14 +13,10 @@
 extern "C" {
 #endif
 
-#include "main.h"
-
-void Leds_Hw_Init(void);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __LIB_LEDS_H */
 
 

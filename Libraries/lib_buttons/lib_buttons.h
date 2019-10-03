@@ -75,7 +75,6 @@ osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id,
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __LIB_BUTTONS_H */
 
 
