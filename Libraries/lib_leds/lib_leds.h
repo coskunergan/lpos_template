@@ -14,8 +14,8 @@ extern "C" {
 #endif
 
 #include "main.h"
- 
- typedef enum
+
+typedef enum
 {
     eLEDS_DATA_FRAME,
     eLEDS_CONFIG_FRAME,
@@ -40,6 +40,7 @@ typedef enum
     eLED_7_ID,
     eLED_8_ID,
     eLED_9_ID,
+    eLED_ALL_ID,
     eLED_ID_NUMBEROFTYPE
 } Led_ID_t;
 
@@ -47,13 +48,14 @@ typedef enum
 {
     eON,
     eOFF,
-    eTOGGLE,        
+    eTOGGLE,
 } Led_State_t;
 
 typedef struct
 {
     Led_Frame_t frame_type;
-	  Led_Config_t config;
+    Led_Config_t config;
+    Led_ID_t  led_id;
 } Led_Config_Frame_t;
 
 typedef struct

@@ -38,13 +38,13 @@ typedef enum
 {
     eON,
     eOFF,
-    eTOGGLE,        
+    eTOGGLE,
 } Buzzer_State_t;
 
 typedef struct
 {
     Buzzer_Frame_t frame_type;
-	  Buzzer_Config_t config;
+    Buzzer_Config_t config;
 } Buzzer_Config_Frame_t;
 
 typedef struct

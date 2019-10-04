@@ -1,5 +1,5 @@
 /*
- *  Buzzer Library 
+ *  Buzzer Library
  *
  *  Created on: Sep 30, 2019
  *
@@ -7,7 +7,6 @@
  */
 
 #include "lib_buzzer.h"
-#include "hw_buzzer.h"
 #include "pin_defines.h"
 
 /*********************************************************/
@@ -30,17 +29,17 @@ void Buzzer_Hw_DeInit(void)
 void Buzzer_Operation(Buzzer_State_t state)
 {
     if(state == eON)
-		{
-				HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
+    {
+        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
     }
-		else if(state == eOFF)
-		{
-				HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
-		}
-		else if(state == eTOGGLE)
-		{
-			 HAL_GPIO_TogglePin(BUZZER_PORT, BUZZER_PIN);
-		}
+    else if(state == eOFF)
+    {
+        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
+    }
+    else if(state == eTOGGLE)
+    {
+        HAL_GPIO_TogglePin(BUZZER_PORT, BUZZER_PIN);
+    }
 }
 /*********************************************************/
 /*********************************************************/

@@ -12,6 +12,9 @@ FIRST_START_OS(Lib_Init);
 
 //__weak extern osStatus_t SendDataMsg_Buzzer(uint8_t tone, uint16_t active_time);
 
+#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECT_SIZE sizeof(Buzzer_Data_Frame_t)
+
 static osMessageQueueId_t mq_id;
 
 static void StartTask(void *argument);
@@ -25,7 +28,7 @@ extern void Buzzer_Operation(Buzzer_State_t state);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(3, sizeof(Buzzer_Data_Frame_t) * 3, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -69,7 +72,7 @@ static void StartTask(void *argument)
 {
     Buzzer_Data_Frame_t *data_msg;
     Buzzer_Config_Frame_t *config_msg;
-    uint8_t *msg = malloc(osMessageQueueGetMsgSize(mq_id));
+    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
 
     for(;;)
     {

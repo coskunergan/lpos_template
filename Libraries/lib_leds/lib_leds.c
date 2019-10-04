@@ -12,12 +12,15 @@ FIRST_START_OS(Lib_Init);
 
 //__weak osStatus_t SendDataMsg_Led(Led_ID_t led_id, Led_State_t state);
 
+#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECT_SIZE sizeof(Led_Data_Frame_t)
+
 static osMessageQueueId_t mq_id;
 
 static void StartTask(void *argument);
 
-extern void Leds_Hw_Init(void);
-extern void Leds_Hw_DeInit(void);
+extern void Leds_Hw_Init(Led_ID_t led_id);
+extern void Leds_Hw_DeInit(Led_ID_t led_id);
 extern void Led_Operation(Led_Data_Frame_t *data_msg);
 
 /*********************************************************/
@@ -25,7 +28,7 @@ extern void Led_Operation(Led_Data_Frame_t *data_msg);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(3, sizeof(Led_Data_Frame_t) * 3, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -70,7 +73,7 @@ static void StartTask(void *argument)
 {
     Led_Data_Frame_t *data_msg;
     Led_Config_Frame_t *config_msg;
-    uint8_t *msg = malloc(osMessageQueueGetMsgSize(mq_id));
+    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
 
     for(;;)
     {
@@ -82,10 +85,10 @@ static void StartTask(void *argument)
                 switch(config_msg->config)
                 {
                     case eLEDS_CONFIG_INIT:
-                        Leds_Hw_Init();
+                        Leds_Hw_Init(config_msg->led_id);
                         break;
                     case eLEDS_CONFIG_DEINIT:
-                        Leds_Hw_DeInit();
+                        Leds_Hw_DeInit(config_msg->led_id);
                         break;
                     default:
                         break;
