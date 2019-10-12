@@ -17,6 +17,8 @@ extern "C" {
 
 #define BUZZER_STRUCT_VERSION	1
 
+#define BUZZER_TONE_A 0
+#define BUZZER_TONE_NONE 255
 #define BUZZER_SHORT_BEEP 80
 #define BUZZER_LONG_BEEP 500
 
@@ -29,16 +31,18 @@ typedef enum
 
 typedef enum
 {
-    eBUZZER_CONFIG_INIT,
-    eBUZZER_CONFIG_DEINIT,
-    eBUZZER_CONFIG_NUMBEROFTYPES
+    eBUZZER_INIT,
+    eBUZZER_DEINIT,
+    eBUZZER_DISABLE,
+    eBUZZER_ENABLE,
+    eBUZZER_NUMBEROFTYPES
 } Buzzer_Config_t;
 
 typedef enum
 {
-    eON,
-    eOFF,
-    eTOGGLE,
+    eBUZZER_ON,
+    eBUZZER_OFF,
+    eBUZZER_TOGGLE,
 } Buzzer_State_t;
 
 typedef struct
@@ -55,6 +59,7 @@ typedef struct
 } Buzzer_Data_Frame_t;
 
 osStatus_t SendDataMsg_Buzzer(uint8_t tone, uint16_t active_time);
+osStatus_t SendConfigMsg_Buzzer(Buzzer_Config_t config);
 
 #ifdef __cplusplus
 }

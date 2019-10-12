@@ -15,6 +15,7 @@ extern "C" {
 
 #include "main.h"
 
+
 typedef struct
 {
     uint32_t  key;
@@ -27,7 +28,6 @@ typedef struct
 static void func(void); \
 __attribute__((used, section(".lib_obj"))) \
 static Lib_Start_List_t lib_start = { LIB_PORT_KEY, &func };
-
 
 void SysLib_Init(void);
 

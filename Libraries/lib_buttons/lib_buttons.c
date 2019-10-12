@@ -10,9 +10,7 @@
 
 FIRST_START_OS(Lib_Init);
 
-//__weak osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id, void *cb_func);
-
-#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECTS  5
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buttons_Config_Frame_t)
 #define	BUTTON_CALLBACK_LIMIT 32
 
@@ -44,11 +42,11 @@ static void Lib_Init(void)
     osThreadNew(StartTask, NULL, &defaultTask_attributes);
 }
 /*********************************************************/
-osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id, void *cb_func)
+osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func)
 {
     Buttons_Config_Frame_t msg;
 
-    msg.frame_type = eBUTTONS_CONFIG_FRAME;
+    msg.frame_type = eBUTTON_CONFIG_FRAME;
     msg.config = config;
     msg.button_id = button_id;
     msg.vfPtr = (void	(*)(Button_State_t state))cb_func;
@@ -70,25 +68,25 @@ static void StartTask(void *argument)
     {
         if(osMessageQueueGet(mq_id, msg, NULL, 500) == osOK)
         {
-            if(*msg == eBUTTONS_CONFIG_FRAME)
+            if(*msg == eBUTTON_CONFIG_FRAME)
             {
                 config_msg = (Buttons_Config_Frame_t *)msg;
                 switch(config_msg->config)
                 {
-                    case eBUTTONS_CONFIG_INIT:
+                    case eBUTTON_INIT:
                         Buttons_Hw_Init(config_msg->button_id);
                         break;
-                    case	eBUTTONS_CONFIG_DEINIT:
+                    case	eBUTTON_DEINIT:
                         Buttons_Hw_DeInit(config_msg->button_id);
                         break;
-                    case eBUTTONS_CONFIG_DISABLE:
+                    case eBUTTON_DISABLE:
                         Buttons_Hw_Disable(config_msg->button_id);
                         break;
-                    case eBUTTONS_CONFIG_ENABLE:
+                    case eBUTTON_ENABLE:
                         Buttons_Hw_Enable(config_msg->button_id);
                         break;
-                    case eBUTTONS_CONFIG_ADD_CALLBACK:
-                        for(i = 0; i < BUTTON_CALLBACK_LIMIT; i++)
+                    case eBUTTON_ADD_CALLBACK:
+                        for(i = 0; i < BUTTON_CALLBACK_LIMIT; i++)// find
                         {
                             if(Button_Func_Handle[i].vfPtr == NULL)
                             {
@@ -102,11 +100,11 @@ static void StartTask(void *argument)
                                 SysList_Init((list_t)&Button_CbFunc_List[config_msg->button_id]);
                             }
                             Button_Func_Handle[i].vfPtr = (void	(*)(Button_State_t state))config_msg->vfPtr;
-                            SysList_Add((list_t)&Button_CbFunc_List[config_msg->button_id], &Button_Func_Handle[i]);
+                            SysList_Add((list_t)&Button_CbFunc_List[config_msg->button_id], &Button_Func_Handle[i]);// append
                         }
                         break;
-                    case eBUTTONS_CONFIG_DEL_CALLBACK:
-                        for(i = 0; i < BUTTON_CALLBACK_LIMIT; i++)
+                    case eBUTTON_DEL_CALLBACK:
+                        for(i = 0; i < BUTTON_CALLBACK_LIMIT; i++)// find
                         {
                             if(Button_Func_Handle[i].vfPtr == config_msg->vfPtr)
                             {
@@ -116,7 +114,7 @@ static void StartTask(void *argument)
                         if(i != BUTTON_CALLBACK_LIMIT)
                         {
                             Button_Func_Handle[i].vfPtr = NULL;
-                            SysList_Remove((list_t)&Button_CbFunc_List[config_msg->button_id], &Button_Func_Handle[i]);
+                            SysList_Remove((list_t)&Button_CbFunc_List[config_msg->button_id], &Button_Func_Handle[i]);//destroy
                         }
                         break;
                     default:

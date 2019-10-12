@@ -6,6 +6,9 @@
  *  Author: Coskun ERGAN
  */
 
+
+#define LIB_BUTTONS_H
+
 #ifndef __LIB_BUTTONS_H
 #define __LIB_BUTTONS_H
 
@@ -17,42 +20,42 @@ extern "C" {
 
 typedef enum
 {
-    eBUTTONS_CONFIG_FRAME,
-    eBUTTONS_NUMBEROFTYPE
-} Buttons_Frame_t;
+    eBUTTON_DATA_FRAME,
+    eBUTTON_CONFIG_FRAME,
+    eBUTTON_NUMBEROFTYPE
+} Button_Frame_t;
 
 typedef enum
 {
-    eBUTTONS_CONFIG_INIT,
-    eBUTTONS_CONFIG_DEINIT,
-    eBUTTONS_CONFIG_DISABLE,
-    eBUTTONS_CONFIG_ENABLE,
-    eBUTTONS_CONFIG_ADD_CALLBACK,
-    eBUTTONS_CONFIG_DEL_CALLBACK,
-    eBUTTONS_CONFIG_NUMBEROFTYPES
-} Buttons_Config_t;
-
+    eBUTTON_INIT,
+    eBUTTON_DEINIT,
+    eBUTTON_DISABLE,
+    eBUTTON_ENABLE,
+    eBUTTON_ADD_CALLBACK,
+    eBUTTON_DEL_CALLBACK,
+    eBUTTON_NUMBEROFTYPES
+} Button_Config_t;
 
 typedef enum
 {
-    eBUTTON_1_ID,
-    eBUTTON_2_ID,
-    eBUTTON_3_ID,
-    eBUTTON_4_ID,
-    eBUTTON_5_ID,
-    eBUTTON_6_ID,
-    eBUTTON_7_ID,
-    eBUTTON_8_ID,
-    eBUTTON_9_ID,
-    eBUTTON_ALL_ID,
+    eBUTTON_ID_1,
+    eBUTTON_ID_2,
+    eBUTTON_ID_3,
+    eBUTTON_ID_4,
+    eBUTTON_ID_5,
+    eBUTTON_ID_6,
+    eBUTTON_ID_7,
+    eBUTTON_ID_8,
+    eBUTTON_ID_9,
+    eBUTTON_ID_ALL,
     eBUTTON_ID_NUMBEROFTYPE
 } Button_ID_t;
-
 
 typedef enum
 {
     eRELEASED,
-    ePRESSED
+    ePRESSED,
+	  eLONGPRESSED
 } Button_State_t;
 
 struct button_cb_list_t
@@ -64,8 +67,8 @@ typedef struct button_cb_list_t Button_Cb_List_t;
 
 typedef struct
 {
-    Buttons_Frame_t frame_type;
-    Buttons_Config_t config;
+    Button_Frame_t frame_type;
+    Button_Config_t config;
     Button_ID_t button_id;
     void(*vfPtr)(Button_State_t state);
 } Buttons_Config_Frame_t;
@@ -82,7 +85,8 @@ typedef struct
     }																																\
 	}while(0); 																												\
  
-osStatus_t SendConfigMsg_Buttons(Buttons_Config_t config, Button_ID_t button_id, void *cb_func);
+osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func);
+osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func);
 
 #ifdef __cplusplus
 }

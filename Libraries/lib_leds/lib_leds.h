@@ -17,38 +17,40 @@ extern "C" {
 
 typedef enum
 {
-    eLEDS_DATA_FRAME,
-    eLEDS_CONFIG_FRAME,
-    eLEDS_NUMBEROFTYPE
+    eLED_DATA_FRAME,
+    eLED_CONFIG_FRAME,
+    eLED_NUMBEROFTYPE
 } Led_Frame_t;
 
 typedef enum
 {
-    eLEDS_CONFIG_INIT,
-    eLEDS_CONFIG_DEINIT,
-    eLEDS_CONFIG_NUMBEROFTYPES
+    eLED_INIT,
+    eLED_DEINIT,
+    eLED_DISABLE,
+    eLED_ENABLE,
+    eLED_NUMBEROFTYPES
 } Led_Config_t;
 
 typedef enum
 {
-    eLED_1_ID,
-    eLED_2_ID,
-    eLED_3_ID,
-    eLED_4_ID,
-    eLED_5_ID,
-    eLED_6_ID,
-    eLED_7_ID,
-    eLED_8_ID,
-    eLED_9_ID,
-    eLED_ALL_ID,
+    eLED_ID_1,
+    eLED_ID_2,
+    eLED_ID_3,
+    eLED_ID_4,
+    eLED_ID_5,
+    eLED_ID_6,
+    eLED_ID_7,
+    eLED_ID_8,
+    eLED_ID_9,
+    eLED_ID_ALL,
     eLED_ID_NUMBEROFTYPE
 } Led_ID_t;
 
 typedef enum
 {
-    eON,
-    eOFF,
-    eTOGGLE,
+    eLED_ON,
+    eLED_OFF,
+    eLED_TOGGLE,
 } Led_State_t;
 
 typedef struct
@@ -66,6 +68,7 @@ typedef struct
 } Led_Data_Frame_t;
 
 osStatus_t SendDataMsg_Led(Led_ID_t led_id, Led_State_t state);
+osStatus_t SendConfigMsg_Led(Led_Config_t config, Led_ID_t led_id);
 
 #ifdef __cplusplus
 }

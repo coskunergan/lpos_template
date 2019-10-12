@@ -28,15 +28,15 @@ void Buzzer_Hw_DeInit(void)
 /*********************************************************/
 void Buzzer_Operation(Buzzer_State_t state)
 {
-    if(state == eON)
+    if(state == eBUZZER_ON)
     {
         HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
     }
-    else if(state == eOFF)
+    else if(state == eBUZZER_OFF)
     {
         HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
     }
-    else if(state == eTOGGLE)
+    else if(state == eBUZZER_TOGGLE)
     {
         HAL_GPIO_TogglePin(BUZZER_PORT, BUZZER_PIN);
     }
