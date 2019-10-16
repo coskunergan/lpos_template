@@ -8,7 +8,9 @@
 
 #include "lib_buttons.h"
 
+#ifdef LIB_BUTTONS
 FIRST_START_OS(Lib_Init);
+#endif
 
 #define MSGQUEUE_OBJECTS  5
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buttons_Config_Frame_t)
@@ -24,7 +26,7 @@ extern void Buttons_Hw_Enable(Button_ID_t button_id);
 extern void Buttons_Hw_Disable(Button_ID_t button_id);
 
 Button_Cb_List_t Button_CbFunc_List[eBUTTON_ID_NUMBEROFTYPE];
-struct button_cb_list_t Button_Func_Handle[BUTTON_CALLBACK_LIMIT];
+static struct button_cb_list_t Button_Func_Handle[BUTTON_CALLBACK_LIMIT];
 
 /*********************************************************/
 /*********************************************************/
@@ -53,7 +55,7 @@ osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, 
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
-        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 100);
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
     }
     return osErrorNoMemory;
 }
@@ -66,7 +68,7 @@ static void StartTask(void *argument)
 
     for(;;)
     {
-        if(osMessageQueueGet(mq_id, msg, NULL, 500) == osOK)
+        if(osMessageQueueGet(mq_id, msg, NULL, 0) == osOK)
         {
             if(*msg == eBUTTON_CONFIG_FRAME)
             {

@@ -18,7 +18,7 @@ void Buzzer_Hw_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(BUZZER_PORT, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, BUZZER_PASSIVE);
 }
 /*********************************************************/
 void Buzzer_Hw_DeInit(void)
@@ -30,11 +30,11 @@ void Buzzer_Operation(Buzzer_State_t state)
 {
     if(state == eBUZZER_ON)
     {
-        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, BUZZER_ACTIVE);
     }
     else if(state == eBUZZER_OFF)
     {
-        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, BUZZER_PASSIVE);
     }
     else if(state == eBUZZER_TOGGLE)
     {

@@ -8,9 +8,11 @@
 
 #include "lib_leds.h"
 
+#ifdef LIB_LEDS
 FIRST_START_OS(Lib_Init);
+#endif
 
-#define MSGQUEUE_OBJECTS  5
+#define MSGQUEUE_OBJECTS  3
 #define MSGQUEUE_OBJECT_SIZE sizeof(Led_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
@@ -48,7 +50,7 @@ osStatus_t SendDataMsg_Led(Led_ID_t led_id, Led_State_t state)
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
-        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 100);
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
     }
     return osErrorNoMemory;
 }
@@ -63,7 +65,7 @@ osStatus_t SendConfigMsg_Led(Led_Config_t config, Led_ID_t led_id)
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
-        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 100);
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
     }
     return osErrorNoMemory;
 }
@@ -71,9 +73,9 @@ osStatus_t SendConfigMsg_Led(Led_Config_t config, Led_ID_t led_id)
 #ifdef LIB_BUTTONS
 #include "..\lib_buttons\lib_buttons.h"
 //#include "..\..\Libraries\lib_buttons\lib_buttons.h"
-static void Button_Blink_ISR(Button_State_t *state)
+static void Button_Blink_ISR(Button_State_t state)
 {
-    if(*state == ePRESSED)
+    if(state == ePRESSED)
     {
         SendDataMsg_Led(eLED_ID_1, eLED_ON);
     }
@@ -100,7 +102,7 @@ static void StartTask(void *argument)
 
     for(;;)
     {
-        if(osMessageQueueGet(mq_id, msg, NULL, 500) == osOK)
+        if(osMessageQueueGet(mq_id, msg, NULL, 0) == osOK)
         {
             if(*msg == eLED_CONFIG_FRAME)
             {

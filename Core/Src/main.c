@@ -45,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 IWDG_HandleTypeDef hiwdg;
 
-osThreadId_t defaultTaskHandle;
+osThreadId_t IWDTTaskHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -54,7 +54,7 @@ osThreadId_t defaultTaskHandle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_IWDG_Init(void);
-void StartDefaultTask(void *argument);
+void StartIWDTTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -94,7 +94,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_IWDG_Init();
+//  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -119,12 +119,12 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 128
+  const osThreadAttr_t IWDTTask_attributes = {
+    .name = "IWDTTask",
+    .priority = (osPriority_t) osPriorityIdle,
+    .stack_size = 24
   };
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  IWDTTaskHandle = osThreadNew(StartIWDTTask, NULL, &IWDTTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   SysLib_Init();/* add threads, ... */
@@ -271,7 +271,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                           |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7 
                           |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
-                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+                          |GPIO_PIN_12|/*GPIO_PIN_13|GPIO_PIN_14|*/GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -313,17 +313,15 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+void StartIWDTTask(void *argument)
 {
-    
-    
-    
-
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+		HAL_IWDG_Refresh(&hiwdg);
+		
+		osDelay(500);
   }
   /* USER CODE END 5 */ 
 }

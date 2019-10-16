@@ -8,9 +8,11 @@
 
 #include "lib_buzzer.h"
 
+#ifdef LIB_BUZZER
 FIRST_START_OS(Lib_Init);
+#endif
 
-#define MSGQUEUE_OBJECTS  5
+#define MSGQUEUE_OBJECTS  3
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buzzer_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
@@ -47,7 +49,7 @@ osStatus_t SendDataMsg_Buzzer(uint8_t tone, uint16_t active_time)
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
-        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 100);
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
     }
     return osErrorNoMemory;
 }
@@ -61,7 +63,7 @@ osStatus_t SendConfigMsg_Buzzer(Buzzer_Config_t config)
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
-        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 100);
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
     }
     return osErrorNoMemory;
 }
@@ -69,14 +71,14 @@ osStatus_t SendConfigMsg_Buzzer(Buzzer_Config_t config)
 #ifdef LIB_BUTTONS
 #include "..\lib_buttons\lib_buttons.h"
 //#include "..\..\Libraries\lib_buttons\lib_buttons.h"
-static void Button_Blink_ISR(Button_State_t *state)
+static void Button_Blink_ISR(Button_State_t state)
 {
-    if(*state == ePRESSED)
+    if(state == ePRESSED)
     {
         SendDataMsg_Buzzer(BUZZER_TONE_A, BUZZER_SHORT_BEEP);
     }
 
-    if(*state == eLONGPRESSED)
+    if(state == eLONGPRESSED)
     {
         SendDataMsg_Buzzer(BUZZER_TONE_A, BUZZER_SHORT_BEEP);
         SendDataMsg_Buzzer(BUZZER_TONE_NONE, BUZZER_SHORT_BEEP);
@@ -102,7 +104,7 @@ static void StartTask(void *argument)
 
     for(;;)
     {
-        if(osMessageQueueGet(mq_id, msg, NULL, 500) == osOK)
+        if(osMessageQueueGet(mq_id, msg, NULL, 0) == osOK)
         {
             if(*msg == eBUZZER_CONFIG_FRAME)
             {
@@ -128,7 +130,7 @@ static void StartTask(void *argument)
                     osDelay(data_msg->active_time);
                     Buzzer_Operation(eBUZZER_OFF);
                 }
-                if(data_msg->tone == 255)// buzzer ignore tone
+                else if(data_msg->tone == 255)// buzzer ignore tone
                 {
                     Buzzer_Operation(eBUZZER_OFF);
                     osDelay(data_msg->active_time);// buzzer ignore tone

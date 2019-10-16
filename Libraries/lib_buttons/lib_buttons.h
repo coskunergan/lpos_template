@@ -86,7 +86,6 @@ typedef struct
 	}while(0); 																												\
  
 osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func);
-osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func);
 
 #ifdef __cplusplus
 }

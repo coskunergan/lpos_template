@@ -9,7 +9,7 @@
 #include "lib_buttons.h"
 #include "pin_defines.h"
 
-#define BUTTON_PREEMPTPRIORITY 	2
+#define BUTTON_PREEMPTPRIORITY 	15
 #define BUTTON_SUBPRIORITY  	0
 
 static struct isr_list_t Button_Isr_Handle[eBUTTON_ID_NUMBEROFTYPE];
