@@ -68,11 +68,18 @@ void HAL_MspInit(void)
   /* USER CODE END MspInit 0 */
 
   __HAL_RCC_SYSCFG_CLK_ENABLE();
-  __HAL_RCC_PWR_CLK_ENABLE();
 
   /* System interrupt init*/
-  /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+  /* MemoryManagement_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(MemoryManagement_IRQn, 5, 0);
+  /* BusFault_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(BusFault_IRQn, 5, 0);
+  /* UsageFault_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(UsageFault_IRQn, 5, 0);
+  /* DebugMonitor_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DebugMonitor_IRQn, 5, 0);
+  /* SysTick_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SysTick_IRQn, 5, 0);
 
   /* USER CODE BEGIN MspInit 1 */
 
@@ -82,5 +89,56 @@ void HAL_MspInit(void)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+
+/**
+* @brief LPTIM MSP Initialization
+* This function configures the hardware resources used in this example
+* @param hlptim: LPTIM handle pointer
+* @retval None
+*/
+void HAL_LPTIM_MspInit(LPTIM_HandleTypeDef* hlptim)
+{
+  if(hlptim->Instance==LPTIM1)
+  {
+  /* USER CODE BEGIN LPTIM1_MspInit 0 */
+
+  /* USER CODE END LPTIM1_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_LPTIM1_CLK_ENABLE();
+    /* LPTIM1 interrupt Init */
+    HAL_NVIC_SetPriority(LPTIM1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(LPTIM1_IRQn);
+  /* USER CODE BEGIN LPTIM1_MspInit 1 */
+		HAL_LPTIM_Counter_Start_IT(hlptim, 32);
+  /* USER CODE END LPTIM1_MspInit 1 */
+  }
+
+}
+
+/**
+* @brief LPTIM MSP De-Initialization
+* This function freeze the hardware resources used in this example
+* @param hlptim: LPTIM handle pointer
+* @retval None
+*/
+void HAL_LPTIM_MspDeInit(LPTIM_HandleTypeDef* hlptim)
+{
+  if(hlptim->Instance==LPTIM1)
+  {
+  /* USER CODE BEGIN LPTIM1_MspDeInit 0 */
+
+  /* USER CODE END LPTIM1_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_LPTIM1_CLK_DISABLE();
+
+    /* LPTIM1 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(LPTIM1_IRQn);
+  /* USER CODE BEGIN LPTIM1_MspDeInit 1 */
+
+  /* USER CODE END LPTIM1_MspDeInit 1 */
+  }
+
+}
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

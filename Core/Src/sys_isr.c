@@ -237,10 +237,10 @@ void COMP_IRQHandler(void)
 {
     SYSISR_PROCCES(_COMP_IRQHandler);
 }
-void LPTIM1_IRQHandler(void)
-{
-    SYSISR_PROCCES(_LPTIM1_IRQHandler);
-}
+//void LPTIM1_IRQHandler(void)
+//{
+//    SYSISR_PROCCES(_LPTIM1_IRQHandler);
+//}
 void LPTIM2_IRQHandler(void)
 {
     SYSISR_PROCCES(_LPTIM2_IRQHandler);

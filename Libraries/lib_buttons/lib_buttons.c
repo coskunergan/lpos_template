@@ -39,7 +39,7 @@ static void Lib_Init(void)
     {
         .name = "ButtonsTask",
         .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 128
+        .stack_size = 256
     };
     osThreadNew(StartTask, NULL, &defaultTask_attributes);
 }
@@ -68,7 +68,7 @@ static void StartTask(void *argument)
 
     for(;;)
     {
-        if(osMessageQueueGet(mq_id, msg, NULL, 0) == osOK)
+        if(osMessageQueueGet(mq_id, msg, NULL, osWaitForever) == osOK)
         {
             if(*msg == eBUTTON_CONFIG_FRAME)
             {
