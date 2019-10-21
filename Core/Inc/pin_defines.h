@@ -14,18 +14,30 @@ extern "C" {
 #endif
 
 #include "main.h"
-
 //--------------------------------
-#define LED_1_PIN  	GPIO_PIN_5
-#define LED_1_PORT 	GPIOD
-#define LED_1_ACTIVE GPIO_PIN_SET
-#define LED_1_PASSIVE GPIO_PIN_RESET
+#define NUCLEO_L476
+//--------------------------------
+#ifdef NUCLEO_L476
+	#define LED_1_PIN  	GPIO_PIN_5
+	#define LED_1_PORT 	GPIOA
+	#define LED_1_ACTIVE GPIO_PIN_SET
+	#define LED_1_PASSIVE GPIO_PIN_RESET
 
-#define LED_2_PIN  	GPIO_PIN_6
-#define LED_2_PORT 	GPIOD
-#define LED_2_ACTIVE GPIO_PIN_SET
-#define LED_2_PASSIVE GPIO_PIN_RESET
+	#define LED_2_PIN  	GPIO_PIN_6
+	#define LED_2_PORT 	GPIOA
+	#define LED_2_ACTIVE GPIO_PIN_SET
+	#define LED_2_PASSIVE GPIO_PIN_RESET	
+#else
+	#define LED_1_PIN  	GPIO_PIN_5
+	#define LED_1_PORT 	GPIOD
+	#define LED_1_ACTIVE GPIO_PIN_SET
+	#define LED_1_PASSIVE GPIO_PIN_RESET
 
+	#define LED_2_PIN  	GPIO_PIN_6
+	#define LED_2_PORT 	GPIOD
+	#define LED_2_ACTIVE GPIO_PIN_SET
+	#define LED_2_PASSIVE GPIO_PIN_RESET	
+#endif
 #define LED_3_PIN  	GPIO_PIN_12
 #define LED_3_PORT 	GPIOC
 #define LED_3_ACTIVE GPIO_PIN_SET
@@ -61,10 +73,17 @@ extern "C" {
 #define LED_9_ACTIVE GPIO_PIN_SET
 #define LED_9_PASSIVE GPIO_PIN_RESET
 //--------------------------------
-#define BUZZER_PIN  	GPIO_PIN_10
-#define BUZZER_PORT 	GPIOE
-#define BUZZER_ACTIVE GPIO_PIN_RESET
-#define BUZZER_PASSIVE GPIO_PIN_SET
+#ifdef NUCLEO_L476
+	#define BUZZER_PIN  	GPIO_PIN_7
+	#define BUZZER_PORT 	GPIOA
+	#define BUZZER_ACTIVE GPIO_PIN_RESET
+	#define BUZZER_PASSIVE GPIO_PIN_SET
+#else
+	#define BUZZER_PIN  	GPIO_PIN_10
+	#define BUZZER_PORT 	GPIOE
+	#define BUZZER_ACTIVE GPIO_PIN_RESET
+	#define BUZZER_PASSIVE GPIO_PIN_SET
+#endif
 //--------------------------------
 #define BUTTON_1_ISR_HANDLER  _EXTI15_10_IRQHandler
 #define BUTTON_1_ISR_ADR   		EXTI15_10_IRQn

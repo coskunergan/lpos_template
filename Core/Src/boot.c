@@ -21,7 +21,7 @@ static void Boot_Init(void)
     {
         .name = "BootTask",
         .priority = (osPriority_t) osPriorityHigh,
-        .stack_size = 512
+        .stack_size = 256
     };
     osThreadNew(BootTask, NULL, &defaultTask_attributes);
 }

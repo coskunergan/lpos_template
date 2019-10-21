@@ -60,7 +60,6 @@
 /* External variables --------------------------------------------------------*/
 extern LPTIM_HandleTypeDef hlptim1;
 /* USER CODE BEGIN EV */
-volatile uint32_t Tick_Flag = pdFALSE;
 
 /* USER CODE END EV */
 
@@ -186,15 +185,7 @@ void LPTIM1_IRQHandler(void)
     HAL_LPTIM_IRQHandler(&hlptim1);
 
     /* USER CODE BEGIN LPTIM1_IRQn 1 */
-    Tick_Flag = pdTRUE;
-#if (INCLUDE_xTaskGetSchedulerState == 1 )
-            if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
-            {
-#endif /* INCLUDE_xTaskGetSchedulerState */
-                xPortSysTickHandler();
-#if (INCLUDE_xTaskGetSchedulerState == 1 )
-            }
-#endif /* INCLUDE_xTaskGetSchedulerState */
+
     /* USER CODE END LPTIM1_IRQn 1 */
 }
 
