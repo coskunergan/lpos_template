@@ -19,65 +19,74 @@ static struct isr_list_t Button_Isr_Handle[eBUTTON_ID_NUMBEROFTYPE];
 /*********************************************************/
 Button_State_t Get_Button_State(Button_ID_t button_id)
 {
+    Button_State_t state = eRELEASED;
     switch(button_id)
     {
         default:
         case eBUTTON_ID_1:
             if(HAL_GPIO_ReadPin(BUTTON_1_PORT, BUTTON_1_PIN) == BUTTON_1_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_2:
             if(HAL_GPIO_ReadPin(BUTTON_2_PORT, BUTTON_2_PIN) == BUTTON_2_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_3:
             if(HAL_GPIO_ReadPin(BUTTON_3_PORT, BUTTON_3_PIN) == BUTTON_3_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_4:
             if(HAL_GPIO_ReadPin(BUTTON_4_PORT, BUTTON_4_PIN) == BUTTON_4_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_5:
             if(HAL_GPIO_ReadPin(BUTTON_5_PORT, BUTTON_5_PIN) == BUTTON_5_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_6:
             if(HAL_GPIO_ReadPin(BUTTON_6_PORT, BUTTON_6_PIN) == BUTTON_6_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_7:
             if(HAL_GPIO_ReadPin(BUTTON_7_PORT, BUTTON_7_PIN) == BUTTON_7_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_8:
             if(HAL_GPIO_ReadPin(BUTTON_8_PORT, BUTTON_8_PIN) == BUTTON_8_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
         case eBUTTON_ID_9:
             if(HAL_GPIO_ReadPin(BUTTON_9_PORT, BUTTON_9_PIN) == BUTTON_9_ACTIVE)
             {
-                return ePRESSED;
+                state = ePRESSED;
             }
             break;
     }
-    return eRELEASED;
+    if(state == ePRESSED)
+    {
+        SendDataMsg_Buttons(eBUTTON_TIMER_START, button_id);
+    }
+    else
+    {
+        SendDataMsg_Buttons(eBUTTON_TIMER_STOP, button_id);
+    }
+    return state;
 }
 /*********************************************************/
 void Button_1_ISR(void)

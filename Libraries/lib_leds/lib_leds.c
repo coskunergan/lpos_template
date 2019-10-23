@@ -79,9 +79,15 @@ static void Button_Blink_ISR(Button_State_t state)
     {
         SendDataMsg_Led(eLED_ID_1, eLED_ON);
     }
+    else if(state == eLONGPRESSED)
+    {
+        SendDataMsg_Led(eLED_ID_1, eLED_OFF);
+        SendDataMsg_Led(eLED_ID_2, eLED_ON);
+    }
     else
     {
         SendDataMsg_Led(eLED_ID_1, eLED_OFF);
+        SendDataMsg_Led(eLED_ID_2, eLED_OFF);
     }
 }
 static void Button_Procces(void)

@@ -15,6 +15,7 @@ FIRST_START_OS(Lib_Init);
 #define MSGQUEUE_OBJECTS  5
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buttons_Config_Frame_t)
 #define	BUTTON_CALLBACK_LIMIT 32
+#define BUTTON_LONGPRESS_PERIOD_TICK  3000
 
 static osMessageQueueId_t mq_id;
 
@@ -27,6 +28,8 @@ extern void Buttons_Hw_Disable(Button_ID_t button_id);
 
 Button_Cb_List_t Button_CbFunc_List[eBUTTON_ID_NUMBEROFTYPE];
 static struct button_cb_list_t Button_Func_Handle[BUTTON_CALLBACK_LIMIT];
+static osTimerId_t Timer_ID[eBUTTON_ID_NUMBEROFTYPE];
+static uint32_t Timer_Arg[eBUTTON_ID_NUMBEROFTYPE];
 
 /*********************************************************/
 /*********************************************************/
@@ -42,6 +45,21 @@ static void Lib_Init(void)
         .stack_size = 256
     };
     osThreadNew(StartTask, NULL, &defaultTask_attributes);
+}
+/*********************************************************/
+osStatus_t SendDataMsg_Buttons(Button_Data_t data, Button_ID_t button_id)
+{
+    Buttons_Data_Frame_t msg;
+
+    msg.frame_type = eBUTTON_DATA_FRAME;
+    msg.data = data;
+    msg.button_id = button_id;
+
+    if(osMessageQueueGetSpace(mq_id) != 0)
+    {
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
+    }
+    return osErrorNoMemory;
 }
 /*********************************************************/
 osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func)
@@ -60,9 +78,15 @@ osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, 
     return osErrorNoMemory;
 }
 /*********************************************************/
+void Timers_Callback(void *arg)
+{
+    BUTTON_CALLBACK_FUNC(*((uint32_t *)(arg)), eLONGPRESSED);
+}
+/*********************************************************/
 static void StartTask(void *argument)
 {
     Buttons_Config_Frame_t *config_msg;
+    Buttons_Data_Frame_t *data_msg;
     uint8_t msg[MSGQUEUE_OBJECT_SIZE];
     uint8_t i;
 
@@ -118,6 +142,27 @@ static void StartTask(void *argument)
                             Button_Func_Handle[i].vfPtr = NULL;
                             SysList_Remove((list_t)&Button_CbFunc_List[config_msg->button_id], &Button_Func_Handle[i]);//destroy
                         }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if(*msg == eBUTTON_DATA_FRAME)
+            {
+                data_msg = (Buttons_Data_Frame_t *)msg;
+                switch(data_msg->data)
+                {
+                    case eBUTTON_TIMER_START:
+                        if(Timer_ID[data_msg->button_id] == NULL)
+                        {
+                            Timer_Arg[data_msg->button_id] = data_msg->button_id;
+                            Timer_ID[data_msg->button_id] = osTimerNew(Timers_Callback, osTimerOnce, &Timer_Arg[data_msg->button_id], NULL);//create timer
+                            osTimerStart(Timer_ID[data_msg->button_id], BUTTON_LONGPRESS_PERIOD_TICK);
+                        }
+                        break;
+                    case	eBUTTON_TIMER_STOP:
+                        osTimerDelete(Timer_ID[data_msg->button_id]); //destroy timer
+                        Timer_ID[data_msg->button_id] = NULL;
                         break;
                     default:
                         break;

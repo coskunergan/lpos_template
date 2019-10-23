@@ -38,6 +38,12 @@ typedef enum
 
 typedef enum
 {
+    eBUTTON_TIMER_START,
+    eBUTTON_TIMER_STOP
+} Button_Data_t;
+
+typedef enum
+{
     eBUTTON_ID_1,
     eBUTTON_ID_2,
     eBUTTON_ID_3,
@@ -55,7 +61,7 @@ typedef enum
 {
     eRELEASED,
     ePRESSED,
-	  eLONGPRESSED
+    eLONGPRESSED
 } Button_State_t;
 
 struct button_cb_list_t
@@ -73,6 +79,13 @@ typedef struct
     void(*vfPtr)(Button_State_t state);
 } Buttons_Config_Frame_t;
 
+typedef struct
+{
+    Button_Frame_t frame_type;
+    Button_ID_t button_id;
+    Button_Data_t data;
+} Buttons_Data_Frame_t;
+
 #define BUTTON_CALLBACK_FUNC(_BUTTON_ID,_STATE) 									 	\
 		do{																															\
 		extern Button_Cb_List_t Button_CbFunc_List[];										\
@@ -86,6 +99,7 @@ typedef struct
 	}while(0); 																												\
  
 osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, void *cb_func);
+osStatus_t SendDataMsg_Buttons(Button_Data_t data, Button_ID_t button_id);
 
 #ifdef __cplusplus
 }

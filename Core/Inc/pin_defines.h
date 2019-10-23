@@ -15,8 +15,8 @@ extern "C" {
 
 #include "main.h"
 //--------------------------------
-#define NUCLEO_L476
-//--------------------------------
+//#define NUCLEO_L476
+//----------- LED x--------------
 #ifdef NUCLEO_L476
 	#define LED_1_PIN  	GPIO_PIN_5
 	#define LED_1_PORT 	GPIOA
@@ -72,7 +72,7 @@ extern "C" {
 #define LED_9_PORT 	GPIOC
 #define LED_9_ACTIVE GPIO_PIN_SET
 #define LED_9_PASSIVE GPIO_PIN_RESET
-//--------------------------------
+//------------ BUZZER -------------
 #ifdef NUCLEO_L476
 	#define BUZZER_PIN  	GPIO_PIN_7
 	#define BUZZER_PORT 	GPIOA
@@ -84,7 +84,7 @@ extern "C" {
 	#define BUZZER_ACTIVE GPIO_PIN_RESET
 	#define BUZZER_PASSIVE GPIO_PIN_SET
 #endif
-//--------------------------------
+//------------ BUTTON x----------------
 #define BUTTON_1_ISR_HANDLER  _EXTI15_10_IRQHandler
 #define BUTTON_1_ISR_ADR   		EXTI15_10_IRQn
 #define BUTTON_1_PIN  				GPIO_PIN_13
@@ -147,7 +147,265 @@ extern "C" {
 #define BUTTON_9_PORT 				GPIOC
 #define BUTTON_9_PULL   			GPIO_PULLUP
 #define BUTTON_9_ACTIVE     	GPIO_PIN_RESET
+//------------ GLASS LCD -----------------
+#define LCD_GPIO_BANKA_PINS  (GPIO_PIN_8 |  GPIO_PIN_9 | GPIO_PIN_10)
+#define LCD_GPIO_BANKB_PINS  (GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 )
+#define LCD_GPIO_BANKC_PINS  (GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 )
+#define LCD_GPIO_BANKD_PINS  (GPIO_PIN_2 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15)
+#define LCD_GPIO_BANKE_PINS  (GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3)
+
+#define ICONREG_COMMA 				LCD_RAM_REGISTER1
+#define ICONREG_UP_POINT_1 		LCD_RAM_REGISTER0
+#define ICONREG_UP_POINT_2 		LCD_RAM_REGISTER7
+#define ICONREG_UP_POINT_3 		LCD_RAM_REGISTER6
+#define ICONREG_BOX 					LCD_RAM_REGISTER7
+#define ICONREG_UP_KW 				LCD_RAM_REGISTER6
+#define ICONREG_HOUR 					LCD_RAM_REGISTER4
+#define ICONREG_UP_M3 				LCD_RAM_REGISTER2
+#define ICONREG_UP_LT 				LCD_RAM_REGISTER0
+#define ICONREG_ARROW_HIGH 		LCD_RAM_REGISTER0
+#define ICONREG_ARROW_LINE 		LCD_RAM_REGISTER0
+#define ICONREG_ARROW_LOW 		LCD_RAM_REGISTER1
+#define ICONREG_DN_POINT_1	 	LCD_RAM_REGISTER1
+#define ICONREG_DN_POINT_2 		LCD_RAM_REGISTER0
+#define ICONREG_DN_POINT_3 		LCD_RAM_REGISTER0
+#define ICONREG_DN_KW 				LCD_RAM_REGISTER4
+#define ICONREG_DN_LTH 				LCD_RAM_REGISTER2
+#define ICONREG_DN_M3H 				LCD_RAM_REGISTER0
+#define ICONREG_ANTENNA 			LCD_RAM_REGISTER0
+#define ICONREG_BATTERY 			LCD_RAM_REGISTER2
+#define ICONREG_BATTERY_1 		LCD_RAM_REGISTER6
+#define ICONREG_BATTERY_2 		LCD_RAM_REGISTER6
+#define ICONREG_BATTERY_3 		LCD_RAM_REGISTER4
+#define ICONREG_VALVE 				LCD_RAM_REGISTER0
+#define ICONREG_FAULT 				LCD_RAM_REGISTER2
+#define ICONREG_WARNING 			LCD_RAM_REGISTER4
+#define ICONREG_LEAKEGE       LCD_RAM_REGISTER6
+
+#define ICONBIT_COMMA 				11	
+#define ICONBIT_UP_POINT_1 		21	
+#define ICONBIT_UP_POINT_2 		 6	
+#define ICONBIT_UP_POINT_3 		10	
+#define ICONBIT_BOX 		 			4	
+#define ICONBIT_UP_KW 				12	
+#define ICONBIT_HOUR 					12	
+#define ICONBIT_UP_M3 				12	
+#define ICONBIT_UP_LT 				12	
+#define ICONBIT_ARROW_HIGH 		23	
+#define ICONBIT_ARROW_LINE 		26	
+#define ICONBIT_ARROW_LOW 		 3	
+#define ICONBIT_DN_POINT_1		 1 	
+#define ICONBIT_DN_POINT_2 		31	
+#define ICONBIT_DN_POINT_3 		29	
+#define ICONBIT_DN_KW 				15	
+#define ICONBIT_DN_LTH 				15	
+#define ICONBIT_DN_M3H 				15	
+#define ICONBIT_ANTENNA 			14	
+#define ICONBIT_BATTERY 			14	
+#define ICONBIT_BATTERY_1 		15	
+#define ICONBIT_BATTERY_2 		14	
+#define ICONBIT_BATTERY_3 		14	
+#define ICONBIT_VALVE 				13	
+#define ICONBIT_FAULT 				13	
+#define ICONBIT_WARNING 			13	
+#define ICONBIT_LEAKEGE       13	
+
+#define LCD_DIGIT_1A_BIT 25            
+#define LCD_DIGIT_1A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_1B_BIT 25            
+#define LCD_DIGIT_1B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_1C_BIT 25            
+#define LCD_DIGIT_1C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_1D_BIT 25            
+#define LCD_DIGIT_1D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_1E_BIT 24           
+#define LCD_DIGIT_1E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_1F_BIT 24            
+#define LCD_DIGIT_1F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_1G_BIT 24            
+#define LCD_DIGIT_1G_REG LCD_RAM_REGISTER4
+								 
+#define LCD_DIGIT_2A_BIT 27            
+#define LCD_DIGIT_2A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_2B_BIT 27            
+#define LCD_DIGIT_2B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_2C_BIT 27            
+#define LCD_DIGIT_2C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_2D_BIT 27            
+#define LCD_DIGIT_2D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_2E_BIT 26            
+#define LCD_DIGIT_2E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_2F_BIT 26            
+#define LCD_DIGIT_2F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_2G_BIT 26            
+#define LCD_DIGIT_2G_REG LCD_RAM_REGISTER4
+								 
+#define LCD_DIGIT_3A_BIT 22            
+#define LCD_DIGIT_3A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_3B_BIT 22            
+#define LCD_DIGIT_3B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_3C_BIT 22            
+#define LCD_DIGIT_3C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_3D_BIT 22            
+#define LCD_DIGIT_3D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_3E_BIT 23            
+#define LCD_DIGIT_3E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_3F_BIT 23            
+#define LCD_DIGIT_3F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_3G_BIT 23            
+#define LCD_DIGIT_3G_REG LCD_RAM_REGISTER4
+								 
+#define LCD_DIGIT_4A_BIT 7            
+#define LCD_DIGIT_4A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_4B_BIT 7            
+#define LCD_DIGIT_4B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_4C_BIT 7            
+#define LCD_DIGIT_4C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_4D_BIT 7            
+#define LCD_DIGIT_4D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_4E_BIT 11            
+#define LCD_DIGIT_4E_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_4F_BIT 11            
+#define LCD_DIGIT_4F_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_4G_BIT 11            
+#define LCD_DIGIT_4G_REG LCD_RAM_REGISTER5
+								 
+#define LCD_DIGIT_5A_BIT 9            
+#define LCD_DIGIT_5A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_5B_BIT 9            
+#define LCD_DIGIT_5B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_5C_BIT 9            
+#define LCD_DIGIT_5C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_5D_BIT 9            
+#define LCD_DIGIT_5D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_5E_BIT 8            
+#define LCD_DIGIT_5E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_5F_BIT 8            
+#define LCD_DIGIT_5F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_5G_BIT 8            
+#define LCD_DIGIT_5G_REG LCD_RAM_REGISTER4
+								 
+#define LCD_DIGIT_6A_BIT 16            
+#define LCD_DIGIT_6A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_6B_BIT 16            
+#define LCD_DIGIT_6B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_6C_BIT 16            
+#define LCD_DIGIT_6C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_6D_BIT 16            
+#define LCD_DIGIT_6D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_6E_BIT 21            
+#define LCD_DIGIT_6E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_6F_BIT 21            
+#define LCD_DIGIT_6F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_6G_BIT 21            
+#define LCD_DIGIT_6G_REG LCD_RAM_REGISTER4
+								 
+#define LCD_DIGIT_7A_BIT 5            
+#define LCD_DIGIT_7A_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_7B_BIT 5            
+#define LCD_DIGIT_7B_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_7C_BIT 5            
+#define LCD_DIGIT_7C_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_7D_BIT 5            
+#define LCD_DIGIT_7D_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_7E_BIT 4            
+#define LCD_DIGIT_7E_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_7F_BIT 4            
+#define LCD_DIGIT_7F_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_7G_BIT 4            
+#define LCD_DIGIT_7G_REG LCD_RAM_REGISTER3
+								 
+#define LCD_DIGIT_8A_BIT 7            
+#define LCD_DIGIT_8A_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_8B_BIT 7            
+#define LCD_DIGIT_8B_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_8C_BIT 7            
+#define LCD_DIGIT_8C_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_8D_BIT 7            
+#define LCD_DIGIT_8D_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_8E_BIT 6            
+#define LCD_DIGIT_8E_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_8F_BIT 6            
+#define LCD_DIGIT_8F_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_8G_BIT 6            
+#define LCD_DIGIT_8G_REG LCD_RAM_REGISTER3
+						
+#define LCD_DIGIT_9A_BIT 11            
+#define LCD_DIGIT_9A_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_9B_BIT 11            
+#define LCD_DIGIT_9B_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_9C_BIT 11            
+#define LCD_DIGIT_9C_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_9D_BIT 11            
+#define LCD_DIGIT_9D_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_9E_BIT 10            
+#define LCD_DIGIT_9E_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_9F_BIT 10            
+#define LCD_DIGIT_9F_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_9G_BIT 10            
+#define LCD_DIGIT_9G_REG LCD_RAM_REGISTER2
+						 
+#define LCD_DIGIT_10A_BIT 2            
+#define LCD_DIGIT_10A_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_10B_BIT 2            
+#define LCD_DIGIT_10B_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_10C_BIT 2            
+#define LCD_DIGIT_10C_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_10D_BIT 2            
+#define LCD_DIGIT_10D_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_10E_BIT 3            
+#define LCD_DIGIT_10E_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_10F_BIT 3            
+#define LCD_DIGIT_10F_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_10G_BIT 3            
+#define LCD_DIGIT_10G_REG LCD_RAM_REGISTER5
+									
+#define LCD_DIGIT_11A_BIT 0            
+#define LCD_DIGIT_11A_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_11B_BIT 0            
+#define LCD_DIGIT_11B_REG LCD_RAM_REGISTER5
+#define LCD_DIGIT_11C_BIT 0            
+#define LCD_DIGIT_11C_REG LCD_RAM_REGISTER3
+#define LCD_DIGIT_11D_BIT 0            
+#define LCD_DIGIT_11D_REG LCD_RAM_REGISTER1
+#define LCD_DIGIT_11E_BIT 1            
+#define LCD_DIGIT_11E_REG LCD_RAM_REGISTER3			
+#define LCD_DIGIT_11F_BIT 1            
+#define LCD_DIGIT_11F_REG LCD_RAM_REGISTER7
+#define LCD_DIGIT_11G_BIT 1            
+#define LCD_DIGIT_11G_REG LCD_RAM_REGISTER5
+									
+#define LCD_DIGIT_12A_BIT 30            
+#define LCD_DIGIT_12A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_12B_BIT 30            
+#define LCD_DIGIT_12B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_12C_BIT 30            
+#define LCD_DIGIT_12C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_12D_BIT 30            
+#define LCD_DIGIT_12D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_12E_BIT 31           
+#define LCD_DIGIT_12E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_12F_BIT 31           
+#define LCD_DIGIT_12F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_12G_BIT 31           
+#define LCD_DIGIT_12G_REG LCD_RAM_REGISTER4
+									
+#define LCD_DIGIT_13A_BIT 28            
+#define LCD_DIGIT_13A_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_13B_BIT 28            
+#define LCD_DIGIT_13B_REG LCD_RAM_REGISTER4
+#define LCD_DIGIT_13C_BIT 28            
+#define LCD_DIGIT_13C_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_13D_BIT 28            
+#define LCD_DIGIT_13D_REG LCD_RAM_REGISTER0
+#define LCD_DIGIT_13E_BIT 29            
+#define LCD_DIGIT_13E_REG LCD_RAM_REGISTER2
+#define LCD_DIGIT_13F_BIT 29            
+#define LCD_DIGIT_13F_REG LCD_RAM_REGISTER6
+#define LCD_DIGIT_13G_BIT 29            
+#define LCD_DIGIT_13G_REG LCD_RAM_REGISTER4
 //--------------------------------
+
 #ifdef __cplusplus
 }
 #endif

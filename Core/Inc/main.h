@@ -33,7 +33,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "stdint.h"
 #include "stdlib.h"
+#include "string.h"
 #include "cmsis_os2.h"
 #include "boot.h"
 #include "sys_lib.h"

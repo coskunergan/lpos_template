@@ -18,6 +18,7 @@ extern "C" {
 #define LIB_LEDS
 #define LIB_BUZZER
 #define LIB_BUTTONS
+#define LIB_GLASSLCD
 
 #ifdef __cplusplus
 }
