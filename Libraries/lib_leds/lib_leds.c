@@ -36,8 +36,10 @@ static void Lib_Init(void)
         .priority = (osPriority_t) osPriorityNormal,
         .stack_size = 256
     };
-    osThreadNew(StartTask, NULL, &defaultTask_attributes);
-
+    if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
+    {
+        Error_Handler();
+    }
 }
 /*********************************************************/
 osStatus_t SendDataMsg_Led(Led_ID_t led_id, Led_State_t state)

@@ -36,7 +36,10 @@ static void Lib_Init(void)
         .priority = (osPriority_t) osPriorityNormal,
         .stack_size = 256
     };
-    osThreadNew(StartTask, NULL, &defaultTask_attributes);
+    if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
+    {
+       Error_Handler();
+    }
 }
 /*********************************************************/
 osStatus_t SendDataMsg_Buzzer(uint8_t tone, uint16_t active_time)

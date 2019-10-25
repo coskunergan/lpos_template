@@ -19,6 +19,7 @@ extern "C" {
 #define LIB_BUZZER
 #define LIB_BUTTONS
 #define LIB_GLASSLCD
+#define LIB_CALENDAR
 
 #ifdef __cplusplus
 }

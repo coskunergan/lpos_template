@@ -86,7 +86,7 @@ typedef struct
     double double_value;
     int32_t decimal_value;
     uint8_t minus;
-    uint8_t string[13];
+    char string[13];
 } Glasslcd_Struct_t;
 
 typedef enum
@@ -136,6 +136,7 @@ typedef struct
 #define Y_CHAR  	23
 #define H_CHAR  	24
 #define I_CHAR  	25
+#define EQUAL_CHAR  	26
 
 #define G_CHAR  	9
 #define S_CHAR  	5

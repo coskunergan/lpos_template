@@ -209,21 +209,151 @@ static void BSP_LCD_GLASS_Display_Double(double number, uint8_t useBottomScreen)
     }
 }
 /*********************************************************/
-static void BSP_LCD_GLASS_Display_String(uint8_t *str)
+static void BSP_LCD_GLASS_Display_String(char *str)
 {
-    WriteDigit(*str++, LCD_DIGIT_POSITION_1);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_2);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_3);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_4);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_5);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_6);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_7);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_8);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_9);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_10);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_11);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_12);
-    WriteDigit(*str++, LCD_DIGIT_POSITION_13);
+    uint8_t i;
+    for(i = 0; i < 13; i++)
+    {
+        switch(*str)
+        {
+            case '0':
+                *str = 0;
+                break;
+            case '1':
+                *str = 1;
+                break;
+            case '2':
+                *str = 2;
+                break;
+            case '3':
+                *str = 3;
+                break;
+            case '4':
+                *str = 4;
+                break;
+            case '5':
+                *str = 5;
+                break;
+            case '6':
+                *str = 6;
+                break;
+            case '7':
+                *str = 7;
+                break;
+            case '8':
+                *str = 8;
+                break;
+            case '9':
+                *str = 9;
+                break;
+            case '-':
+                *str = MINUS_CHAR;
+                break;
+            case 'A':
+                *str = A_CHAR;
+                break;
+            case 'B':
+                *str = B_CHAR;
+                break;
+            case 'C':
+                *str = C_CHAR;
+                break;
+            case 'D':
+                *str = D_CHAR;
+                break;
+            case 'E':
+                *str = E_CHAR;
+                break;
+            case 'F':
+                *str = F_CHAR;
+                break;
+            case 'R':
+                *str = R_CHAR;
+                break;
+            case 'L':
+                *str = L_CHAR;
+                break;
+            case 'T':
+                *str = T_CHAR;
+                break;
+            case 'N':
+                *str = n_CHAR;
+                break;
+            case 'O':
+                *str = o_CHAR;
+                break;
+            case 'Y':
+                *str = Y_CHAR;
+                break;
+            case 'H':
+                *str = H_CHAR;
+                break;
+            case 'I':
+                *str = I_CHAR;
+                break;
+            case 'G':
+                *str = G_CHAR;
+                break;
+            case 'S':
+                *str = S_CHAR;
+                break;
+            case 'a':
+                *str = A_CHAR;
+                break;
+            case 'b':
+                *str = B_CHAR;
+                break;
+            case 'c':
+                *str = C_CHAR;
+                break;
+            case 'd':
+                *str = D_CHAR;
+                break;
+            case 'e':
+                *str = E_CHAR;
+                break;
+            case 'f':
+                *str = F_CHAR;
+                break;
+            case 'r':
+                *str = R_CHAR;
+                break;
+            case 'l':
+                *str = L_CHAR;
+                break;
+            case 't':
+                *str = T_CHAR;
+                break;
+            case 'n':
+                *str = n_CHAR;
+                break;
+            case 'o':
+                *str = o_CHAR;
+                break;
+            case 'y':
+                *str = Y_CHAR;
+                break;
+            case 'h':
+                *str = H_CHAR;
+                break;
+            case 'i':
+                *str = I_CHAR;
+                break;
+            case 'g':
+                *str = G_CHAR;
+                break;
+            case 's':
+                *str = S_CHAR;
+                break;
+            case '=':
+                *str = EQUAL_CHAR;
+                break;
+            default:
+                *str = NULL_CHAR;
+                break;
+        }
+        WriteDigit(*str++, (Glasslcd_DigitPosition_t)(LCD_DIGIT_POSITION_1 + i));
+    }
 }
 /*********************************************************/
 static void BSP_LCD_GLASS_Display_Decimal(int32_t value)
@@ -529,13 +659,14 @@ static void LCD_UpdateDisplayRequest(LCD_HandleTypeDef *hlcd)
     __HAL_LCD_CLEAR_FLAG(hlcd, LCD_FLAG_UDD);
 
     /* Enable the display request */
-    //hlcd->Instance->SR |= LCD_SR_UDR;
-    HAL_LCD_UpdateDisplayRequest(hlcd);
+    hlcd->Instance->SR |= LCD_SR_UDR;
+    //HAL_LCD_UpdateDisplayRequest(hlcd);
+    //osDelay(100);
 }
 /*********************************************************/
 static void WriteDigit(uint8_t digit, Glasslcd_DigitPosition_t Position)
 {
-    const uint8_t number_table[26] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x27, 0x7F, 0x6F, 0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71, 0x40, 0x50, 0x00, 0x38, 0x78, 0x54, 0x5C, 0x6E, 0x76, 0x04}; //,0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,-,r,NULL,L,T,n,o,y,h,i
+    const uint8_t number_table[27] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x27, 0x7F, 0x6F, 0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71, 0x40, 0x50, 0x00, 0x38, 0x78, 0x54, 0x5C, 0x6E, 0x76, 0x04, 0x48}; //,0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,-,r,NULL,L,T,n,o,y,h,i,=
     uint32_t data = 0x00;
     uint32_t mask = 0x00;
 

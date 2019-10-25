@@ -48,15 +48,31 @@ static void BootTask(void *argument)
     osDelay(100);
 #endif
 
+#ifdef LIB_CALENDAR
+#include "..\..\Libraries\lib_calendar\lib_calendar.h"
+    SendConfigMsg_Calendar(eCALENDAR_INIT, NULL, NULL);
+    struct calendar_date date =
+    {
+        .second = 45,
+        .minute = 30,
+        .hour = 15,
+        .date = 25,
+        .month = 10,
+        .year = 2019
+    };
+    SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
+    osDelay(100);
+#endif	
+
 #ifdef LIB_GLASSLCD
 #include "..\..\Libraries\lib_glasslcd\lib_glasslcd.h"
     Glasslcd_Struct_t lcd;
     SendConfigMsg_Glasslcd(eGLASSLCD_INIT);
     lcd.command = eGLASSLCD_STRING;
-    memset(lcd.string,8,13);
+    memset(lcd.string, '8', 13);
     SendDataMsg_Glasslcd(&lcd);
-    lcd.command = eGLASSLCD_SET_ALL_ICON;
-    SendDataMsg_Glasslcd(&lcd);		
+//    lcd.command = eGLASSLCD_SET_ALL_ICON;
+//    SendDataMsg_Glasslcd(&lcd);
     osDelay(100);
 #endif
 
