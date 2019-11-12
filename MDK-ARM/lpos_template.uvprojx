@@ -535,6 +535,16 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_rtc_ex.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32l4xx_hal_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_adc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_adc_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -655,6 +665,16 @@
               <FileType>1</FileType>
               <FilePath>..\Libraries\lib_glasslcd\lib_glasslcd.c</FilePath>
             </File>
+            <File>
+              <FileName>lib_voltage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_voltage\lib_voltage.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_temperature\lib_temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -684,6 +704,16 @@
               <FileName>hw_glasslcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\lib_glasslcd\hw_glasslcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_voltage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_voltage\hw_voltage.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_temperature\hw_temperature.c</FilePath>
             </File>
           </Files>
         </Group>

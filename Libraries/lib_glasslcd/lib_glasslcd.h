@@ -137,6 +137,7 @@ typedef struct
 #define H_CHAR  	24
 #define I_CHAR  	25
 #define EQUAL_CHAR  	26
+#define DEGREE_CHAR  	27
 
 #define G_CHAR  	9
 #define S_CHAR  	5

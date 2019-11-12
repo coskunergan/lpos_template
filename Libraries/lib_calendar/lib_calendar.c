@@ -35,7 +35,7 @@ const uint8_t month[2][12] =
     { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 
-struct calendar_date date =
+volatile struct calendar_date date =
 {
     .second = 0,
     .minute = 0,

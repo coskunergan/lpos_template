@@ -12,6 +12,8 @@ FIRST_START_OS(Boot_Init);
 
 static void BootTask(void *argument);
 
+GlobalStats_t GlobalStats;
+
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -54,8 +56,8 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 45,
-        .minute = 30,
-        .hour = 15,
+        .minute = 03,
+        .hour = 17,
         .date = 25,
         .month = 10,
         .year = 2019
@@ -71,10 +73,20 @@ static void BootTask(void *argument)
     lcd.command = eGLASSLCD_STRING;
     memset(lcd.string, '8', 13);
     SendDataMsg_Glasslcd(&lcd);
-//    lcd.command = eGLASSLCD_SET_ALL_ICON;
-//    SendDataMsg_Glasslcd(&lcd);
     osDelay(100);
 #endif
+		
+#ifdef LIB_VOLTAGE
+#include "..\..\Libraries\lib_voltage\lib_voltage.h"
+    SendConfigMsg_Voltage(eVOLTAGE_INIT,10000);    
+    osDelay(100);
+#endif		
+
+#ifdef LIB_TEMPERATURE
+#include "..\..\Libraries\lib_temperature\lib_temperature.h"
+    SendConfigMsg_Temperature(eTEMPERATURE_INIT,10000);    
+    osDelay(100);
+#endif	
 
     osThreadTerminate(osThreadGetId());
 }

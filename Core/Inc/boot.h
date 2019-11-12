@@ -15,14 +15,24 @@ extern "C" {
 
 #include "main.h"
 
+typedef struct
+{    
+		uint32_t ReferanceVoltageLevelmV;
+		int8_t TemperatureLevelCelsius;    
+		uint8_t CPULevelPercent;  		
+} GlobalStats_t;
+
 #define LIB_LEDS
 #define LIB_BUZZER
 #define LIB_BUTTONS
 #define LIB_GLASSLCD
 #define LIB_CALENDAR
+#define LIB_VOLTAGE
+#define LIB_TEMPERATURE
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __BOOT_H */
+
