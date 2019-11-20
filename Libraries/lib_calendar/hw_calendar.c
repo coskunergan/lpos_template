@@ -9,6 +9,8 @@
 #include "lib_calendar.h"
 #include "pin_defines.h"
 
+#ifdef LIB_CALENDAR
+
 #define CALENDAR_PREEMPTPRIORITY 	15
 #define CALENDAR_SUBPRIORITY  	0
 
@@ -106,3 +108,4 @@ void Calendar_Disable(void)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

@@ -11,6 +11,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+#ifdef LIB_GLASSLCD
+
 const uint32_t glasslcd_icon_table[eICON_SIZEOF][2] =
 {
     {(1UL << ICONBIT_COMMA),  ICONREG_COMMA 			},     //eICON_COMMA
@@ -1211,3 +1213,4 @@ void Glasslcd_Hw_DeInit(void)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

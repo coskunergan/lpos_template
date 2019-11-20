@@ -9,10 +9,7 @@
 #include "lib_temperature.h"
 #include "pin_defines.h"
 
-#define TEMP110_CAL_ADDR TEMPSENSOR_CAL1_ADDR  // calibrated at 3.3V +-10mV   @110C +/- 5C 
-#define TEMP30_CAL_ADDR  TEMPSENSOR_CAL2_ADDR   // calibrated at 3.3V +-10mV   @ 30C +/- 5C 
-#define VREFINT_CAL     ((uint16_t*) ((uint32_t) 0x1FFFF7BA))   // calibrated at 3.3V +-10mV   @ 30C +/- 5C 
-#define VDD_CALIB ((uint16_t) (3000))   // set in factory
+#ifdef LIB_TEMPERATURE
 
 static uint8_t AdcInitialized = 0;
 
@@ -171,3 +168,4 @@ int8_t Temperature_Read(void)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

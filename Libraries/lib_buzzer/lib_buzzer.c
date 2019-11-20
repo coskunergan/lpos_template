@@ -10,7 +10,6 @@
 
 #ifdef LIB_BUZZER
 FIRST_START_OS(Lib_Init);
-#endif
 
 #define MSGQUEUE_OBJECTS  3
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buzzer_Data_Frame_t)
@@ -154,3 +153,4 @@ static void StartTask(void *argument)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

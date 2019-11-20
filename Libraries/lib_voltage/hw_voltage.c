@@ -9,6 +9,8 @@
 #include "lib_voltage.h"
 #include "pin_defines.h"
 
+#ifdef LIB_VOLTAGE
+
 static uint8_t AdcInitialized = 0;
 
 static ADC_HandleTypeDef hadc;
@@ -140,3 +142,4 @@ uint32_t Voltage_Read(void)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

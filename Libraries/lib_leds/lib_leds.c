@@ -10,7 +10,6 @@
 
 #ifdef LIB_LEDS
 FIRST_START_OS(Lib_Init);
-#endif
 
 #define MSGQUEUE_OBJECTS  3
 #define MSGQUEUE_OBJECT_SIZE sizeof(Led_Data_Frame_t)
@@ -138,3 +137,5 @@ static void StartTask(void *argument)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif
+

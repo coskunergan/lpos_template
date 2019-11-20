@@ -9,6 +9,8 @@
 #include "lib_buttons.h"
 #include "pin_defines.h"
 
+#ifdef LIB_BUTTONS
+
 #define BUTTON_PREEMPTPRIORITY 	15
 #define BUTTON_SUBPRIORITY  	0
 
@@ -481,4 +483,5 @@ void Buttons_Hw_Disable(Button_ID_t button_id)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif
 

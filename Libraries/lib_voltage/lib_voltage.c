@@ -10,7 +10,6 @@
 
 #ifdef LIB_VOLTAGE
 FIRST_START_OS(Lib_Init);
-#endif
 
 #define MSGQUEUE_OBJECTS  3
 #define MSGQUEUE_OBJECT_SIZE sizeof(Voltage_Config_Frame_t)
@@ -103,3 +102,4 @@ static void StartTask(void *argument)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif

@@ -10,7 +10,6 @@
 
 #ifdef LIB_BUTTONS
 FIRST_START_OS(Lib_Init);
-#endif
 
 #define MSGQUEUE_OBJECTS  5
 #define MSGQUEUE_OBJECT_SIZE sizeof(Buttons_Config_Frame_t)
@@ -177,3 +176,5 @@ static void StartTask(void *argument)
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#endif
+
