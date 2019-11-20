@@ -56,10 +56,10 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 45,
-        .minute = 03,
-        .hour = 17,
-        .date = 25,
-        .month = 10,
+        .minute = 26,
+        .hour = 10,
+        .date = 19,  //20.day 
+        .month = 10, //November
         .year = 2019
     };
     SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);

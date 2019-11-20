@@ -26,6 +26,8 @@ void Temperature_Hw_Init(void)
 
     if(AdcInitialized == 0)
     {
+        osKernelLock();
+
         __HAL_RCC_ADC_CLK_ENABLE();
 
         hadc.Instance = ADC1;
@@ -72,6 +74,8 @@ void Temperature_Hw_Init(void)
             Error_Handler();
         }
 
+        osKernelUnlock();
+
         AdcInitialized = 1;
     }
 }
@@ -80,7 +84,12 @@ void Temperature_Hw_DeInit(void)
 {
     if(AdcInitialized == 1)
     {
+        osKernelLock();
+
         HAL_ADC_DeInit(&hadc);
+
+        osKernelUnlock();
+
         AdcInitialized = 0;
     }
 }
@@ -93,6 +102,8 @@ int8_t Temperature_Read(void)
 
     if(AdcInitialized == 1)
     {
+        osKernelLock();
+
         __HAL_RCC_ADC_CLK_ENABLE();
 
         if(HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED) !=  HAL_OK)
@@ -149,7 +160,9 @@ int8_t Temperature_Read(void)
 
         ADC_Disable(&hadc);
 
-        __HAL_RCC_ADC_CLK_DISABLE(); 
+        __HAL_RCC_ADC_CLK_DISABLE();
+
+        osKernelUnlock();
 
         return __LL_ADC_CALC_TEMPERATURE(VoltageLevelmV, measuredLevel, LL_ADC_RESOLUTION_12B);;
     }

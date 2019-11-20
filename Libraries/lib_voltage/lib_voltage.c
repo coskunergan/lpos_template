@@ -60,7 +60,7 @@ osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, uint32_t period_ms)
 /*********************************************************/
 static void Timer_Callback(void *arg)
 {
-    GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();	
+    GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
 }
 /*********************************************************/
 static void StartTask(void *argument)
