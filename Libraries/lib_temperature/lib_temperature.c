@@ -16,6 +16,7 @@ FIRST_START_OS(Lib_Init);
 
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
+static osMutexId_t *Hw_Mutex = NULL;
 
 extern GlobalStats_t GlobalStats;
 
@@ -42,13 +43,28 @@ static void Lib_Init(void)
     }
 }
 /*********************************************************/
-osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, uint32_t period_ms)
+osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, osMutexId_t hw_mutex, uint32_t period_ms)
 {
     Temperature_Config_Frame_t msg;
 
     msg.frame_type = eTEMPERATURE_CONFIG_FRAME;
     msg.config = config;
     msg.period_ms = period_ms;
+    msg.hw_mutex = hw_mutex;
+
+    if(osMessageQueueGetSpace(mq_id) != 0)
+    {
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
+    }
+    return osErrorNoMemory;
+}
+/*********************************************************/
+osStatus_t SendDataMsg_Temperature(Temperature_Data_t data)
+{
+    Temperature_Data_Frame_t msg;
+
+    msg.frame_type = eTEMPERATURE_DATA_FRAME;
+    msg.data = data;
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
@@ -59,12 +75,13 @@ osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, uint32_t perio
 /*********************************************************/
 static void Timer_Callback(void *arg)
 {
-    GlobalStats.TemperatureLevelCelsius = Temperature_Read();
+    SendDataMsg_Temperature(eTEMPERATURE_REFRESH);
 }
 /*********************************************************/
 static void StartTask(void *argument)
 {
     Temperature_Config_Frame_t *config_msg;
+    Temperature_Data_Frame_t *data_msg;
     uint8_t msg[MSGQUEUE_OBJECT_SIZE];
 
     for(;;)
@@ -77,13 +94,18 @@ static void StartTask(void *argument)
                 switch(config_msg->config)
                 {
                     case eTEMPERATURE_INIT:
+                        Hw_Mutex = config_msg->hw_mutex;
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
                         Temperature_Hw_Init();
                         GlobalStats.TemperatureLevelCelsius = Temperature_Read();
+                        osMutexRelease(*Hw_Mutex);
                         Timer_ID = osTimerNew(Timer_Callback, osTimerPeriodic, NULL, NULL); //create timer
                         osTimerStart(Timer_ID, config_msg->period_ms);
                         break;
                     case eTEMPERATURE_DEINIT:
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
                         Temperature_Hw_DeInit();
+                        osMutexRelease(*Hw_Mutex);
                         osTimerDelete(Timer_ID); //destroy timer
                         break;
                     case eTEMPERATURE_ENABLE:
@@ -91,6 +113,20 @@ static void StartTask(void *argument)
                         break;
                     case eTEMPERATURE_DISABLE:
                         osTimerStop(Timer_ID);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if(*msg == eTEMPERATURE_DATA_FRAME)
+            {
+                data_msg = (Temperature_Data_Frame_t *)msg;
+                switch(data_msg->data)
+                {
+                    case eTEMPERATURE_REFRESH:
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
+                        GlobalStats.TemperatureLevelCelsius = Temperature_Read();
+                        osMutexRelease(*Hw_Mutex);
                         break;
                     default:
                         break;

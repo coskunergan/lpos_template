@@ -31,14 +31,27 @@ typedef enum
     eTEMPERATURE_NUMBEROFTYPES
 } Temperature_Config_t;
 
+typedef enum
+{
+    eTEMPERATURE_REFRESH,
+} Temperature_Data_t;
+
 typedef struct
 {
     Temperature_Frame_t frame_type;
     Temperature_Config_t config;
+    osMutexId_t hw_mutex;
     uint32_t period_ms;
 } Temperature_Config_Frame_t;
 
-osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, uint32_t period_ms);
+typedef struct
+{
+    Temperature_Frame_t frame_type;
+    Temperature_Data_t data;
+} Temperature_Data_Frame_t;
+
+osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, osMutexId_t hw_mutex, uint32_t period_ms);
+osStatus_t SendDataMsg_Temperature(Temperature_Data_t data);
 int8_t Temperature_Read(void);
 
 #ifdef __cplusplus

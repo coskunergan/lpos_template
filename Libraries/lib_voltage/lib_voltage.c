@@ -16,6 +16,7 @@ FIRST_START_OS(Lib_Init);
 
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
+static osMutexId_t *Hw_Mutex = NULL;
 
 extern GlobalStats_t GlobalStats;
 
@@ -42,13 +43,28 @@ static void Lib_Init(void)
     }
 }
 /*********************************************************/
-osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, uint32_t period_ms)
+osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, osMutexId_t hw_mutex,  uint32_t period_ms)
 {
     Voltage_Config_Frame_t msg;
 
     msg.frame_type = eVOLTAGE_CONFIG_FRAME;
     msg.config = config;
     msg.period_ms = period_ms;
+    msg.hw_mutex = hw_mutex;
+
+    if(osMessageQueueGetSpace(mq_id) != 0)
+    {
+        return osMessageQueuePut(mq_id, &msg, osPriorityNone, 0);
+    }
+    return osErrorNoMemory;
+}
+/*********************************************************/
+osStatus_t SendDataMsg_Voltage(Voltage_Data_t data)
+{
+    Voltage_Data_Frame_t msg;
+
+    msg.frame_type = eVOLTAGE_DATA_FRAME;
+    msg.data = data;
 
     if(osMessageQueueGetSpace(mq_id) != 0)
     {
@@ -59,12 +75,13 @@ osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, uint32_t period_ms)
 /*********************************************************/
 static void Timer_Callback(void *arg)
 {
-    GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
+    SendDataMsg_Voltage(eVOLTAGE_REFRESH);
 }
 /*********************************************************/
 static void StartTask(void *argument)
 {
     Voltage_Config_Frame_t *config_msg;
+    Voltage_Data_Frame_t *data_msg;
     uint8_t msg[MSGQUEUE_OBJECT_SIZE];
 
     for(;;)
@@ -77,13 +94,18 @@ static void StartTask(void *argument)
                 switch(config_msg->config)
                 {
                     case eVOLTAGE_INIT:
+                        Hw_Mutex = config_msg->hw_mutex;
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
                         Voltage_Hw_Init();
                         GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
+                        osMutexRelease(*Hw_Mutex);
                         Timer_ID = osTimerNew(Timer_Callback, osTimerPeriodic, NULL, NULL); //create timer
                         osTimerStart(Timer_ID, config_msg->period_ms);
                         break;
                     case eVOLTAGE_DEINIT:
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
                         Voltage_Hw_DeInit();
+                        osMutexRelease(*Hw_Mutex);
                         osTimerDelete(Timer_ID); //destroy timer
                         break;
                     case eVOLTAGE_ENABLE:
@@ -91,6 +113,20 @@ static void StartTask(void *argument)
                         break;
                     case eVOLTAGE_DISABLE:
                         osTimerStop(Timer_ID);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if(*msg == eVOLTAGE_DATA_FRAME)
+            {
+                data_msg = (Voltage_Data_Frame_t *)msg;
+                switch(data_msg->data)
+                {
+                    case eVOLTAGE_REFRESH:
+                        osMutexAcquire(*Hw_Mutex, osWaitForever);
+                        GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
+                        osMutexRelease(*Hw_Mutex);
                         break;
                     default:
                         break;

@@ -31,14 +31,27 @@ typedef enum
     eVOLTAGE_NUMBEROFTYPES
 } Voltage_Config_t;
 
+typedef enum
+{
+    eVOLTAGE_REFRESH,
+} Voltage_Data_t;
+
 typedef struct
 {
     Voltage_Frame_t frame_type;
     Voltage_Config_t config;
+    osMutexId_t	hw_mutex;
     uint32_t period_ms;
 } Voltage_Config_Frame_t;
 
-osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, uint32_t period_ms);
+typedef struct
+{
+    Voltage_Frame_t frame_type;
+    Voltage_Data_t data;
+} Voltage_Data_Frame_t;
+
+osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, osMutexId_t hw_mutex,  uint32_t period_ms);
+osStatus_t SendDataMsg_Voltage(Voltage_Data_t data);
 uint32_t Voltage_Read(void);
 
 #ifdef __cplusplus

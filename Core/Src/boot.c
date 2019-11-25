@@ -56,15 +56,15 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 45,
-        .minute = 9,
-        .hour = 11,
-        .date = 19,  //20.day 
+        .minute = 47,
+        .hour = 9,
+        .date = 27,  //25.day
         .month = 10, //November
         .year = 2019
     };
     SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
     osDelay(100);
-#endif	
+#endif
 
 #ifdef LIB_GLASSLCD
 #include "..\..\Libraries\lib_glasslcd\lib_glasslcd.h"
@@ -75,18 +75,23 @@ static void BootTask(void *argument)
     SendDataMsg_Glasslcd(&lcd);
     osDelay(100);
 #endif
-		
+
+#if defined(LIB_VOLTAGE) || defined(LIB_TEMPERATURE)
+    static osMutexId_t ADC1_Mutex = NULL;
+    ADC1_Mutex = osMutexNew(NULL);
+#endif
+
 #ifdef LIB_VOLTAGE
 #include "..\..\Libraries\lib_voltage\lib_voltage.h"
-    SendConfigMsg_Voltage(eVOLTAGE_INIT,10000);    
+    SendConfigMsg_Voltage(eVOLTAGE_INIT, ADC1_Mutex, 10000);
     osDelay(100);
-#endif		
+#endif
 
 #ifdef LIB_TEMPERATURE
 #include "..\..\Libraries\lib_temperature\lib_temperature.h"
-    SendConfigMsg_Temperature(eTEMPERATURE_INIT,10000);    
+    SendConfigMsg_Temperature(eTEMPERATURE_INIT, ADC1_Mutex, 10000);
     osDelay(100);
-#endif	
+#endif
 
     osThreadTerminate(osThreadGetId());
 }

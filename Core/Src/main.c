@@ -368,7 +368,7 @@ void StartIWDTTask(void *argument)
   {
 		HAL_IWDG_Refresh(&hiwdg);
 		
-		osDelay(500);
+		osDelay(480);
 		
 	 //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test
   }
