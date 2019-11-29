@@ -545,6 +545,16 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_adc_ex.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32l4xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_uart_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_uart_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -675,6 +685,11 @@
               <FileType>1</FileType>
               <FilePath>..\Libraries\lib_temperature\lib_temperature.c</FilePath>
             </File>
+            <File>
+              <FileName>lib_modbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\lib_modbus.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -714,6 +729,91 @@
               <FileName>hw_temperature.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\lib_temperature\hw_temperature.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_modbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\hw_modbus.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>modbus</GroupName>
+          <Files>
+            <File>
+              <FileName>portevent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\port\portevent.c</FilePath>
+            </File>
+            <File>
+              <FileName>portother.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\port\portother.c</FilePath>
+            </File>
+            <File>
+              <FileName>portserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\port\portserial.c</FilePath>
+            </File>
+            <File>
+              <FileName>porttimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\port\porttimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbcrc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\rtu\mbcrc.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbrtu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\rtu\mbrtu.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbfunccoils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbfunccoils.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbfuncdisc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbfuncdisc.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbfuncholding.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbfuncholding.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbfuncinput.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbfuncinput.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbfuncother.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbfuncother.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbutils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\functions\mbutils.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbascii.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\ascii\mbascii.c</FilePath>
+            </File>
+            <File>
+              <FileName>mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbconfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Libraries\lib_modbus\modbus\include\mbconfig.h</FilePath>
             </File>
           </Files>
         </Group>

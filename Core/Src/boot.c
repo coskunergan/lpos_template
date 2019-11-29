@@ -56,8 +56,8 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 45,
-        .minute = 47,
-        .hour = 9,
+        .minute = 15,
+        .hour = 17,
         .date = 27,  //25.day
         .month = 10, //November
         .year = 2019
@@ -90,6 +90,17 @@ static void BootTask(void *argument)
 #ifdef LIB_TEMPERATURE
 #include "..\..\Libraries\lib_temperature\lib_temperature.h"
     SendConfigMsg_Temperature(eTEMPERATURE_INIT, ADC1_Mutex, 10000);
+    osDelay(100);
+#endif
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Config_Frame_t msg =
+    {
+        .config = eMODBUS_INIT,
+        .baudrate = 9600
+    };
+    SendConfigMsg_Modbus(&msg);
     osDelay(100);
 #endif
 

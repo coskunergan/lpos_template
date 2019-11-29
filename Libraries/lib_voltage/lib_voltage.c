@@ -109,7 +109,7 @@ static void StartTask(void *argument)
                         osTimerDelete(Timer_ID); //destroy timer
                         break;
                     case eVOLTAGE_ENABLE:
-                        osTimerStart(Timer_ID, NULL);
+                        osTimerStart(Timer_ID, config_msg->period_ms);
                         break;
                     case eVOLTAGE_DISABLE:
                         osTimerStop(Timer_ID);

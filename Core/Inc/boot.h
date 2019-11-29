@@ -29,6 +29,7 @@ typedef struct
 #define LIB_CALENDAR
 #define LIB_VOLTAGE
 #define LIB_TEMPERATURE
+#define LIB_MODBUS
 
 #ifdef __cplusplus
 }

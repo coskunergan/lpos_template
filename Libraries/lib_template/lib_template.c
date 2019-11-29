@@ -18,10 +18,10 @@ static osMessageQueueId_t mq_id;
 
 static void StartTask(void *argument);
 
-extern void Template_Hw_Init();
-extern void Template_Hw_DeInit();
-extern void Template_Hw_Enable();
-extern void Template_Hw_Disable();
+extern void Template_Hw_Init(void);
+extern void Template_Hw_DeInit(void);
+extern void Template_Hw_Enable(void);
+extern void Template_Hw_Disable(void);
 extern void Template_Operation(Template_Data_Frame_t *data_msg);
 
 /*********************************************************/
@@ -35,7 +35,7 @@ static void Lib_Init(void)
     {
         .name = "TemplateTask",
         .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 128
+        .stack_size = 256
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
     {

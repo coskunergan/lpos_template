@@ -73,7 +73,7 @@ void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
         /* Just completely clear the interrupt mask on exit by passing 0 because
         it is known that this interrupt will only ever execute with the lowest
         possible interrupt priority. */
-    }		  		
+    }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 
     /* The CPU woke because of a tick. */
@@ -192,7 +192,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
          * Let the application carry out post-sleep processing
          */
         configPOST_SLEEP_PROCESSING(&xModifiableIdleTime);
-				
+
         /* retrieve counter value from LPTIM */
         {
             /* multiple readings are done to get a reliable counter register reading as described in the datasheet */
@@ -202,21 +202,21 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
                 ulCounterValue = HAL_LPTIM_ReadCounter(&hlptim1);
             }
             while(temp != ulCounterValue);
-        }		
-				
+        }
+
         /*
          * Stop low power timer.
          * The time the clock is stopped for is not accounted here, since
          * the clock is so slow. It is quite unlikely it is stopped for a complete count period.
          */
-        HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);	
-				
+        HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
+
         /*
          * Re-enable interrupts.
          */
         __enable_irq();
         __dsb(portSY_FULL_READ_WRITE);
-        __isb(portSY_FULL_READ_WRITE);			
+        __isb(portSY_FULL_READ_WRITE);
 
         if(ulTickFlag != pdFALSE)
         {
