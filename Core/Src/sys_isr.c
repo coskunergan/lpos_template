@@ -47,7 +47,7 @@ void TAMP_STAMP_IRQHandler(void)
 }
 void RTC_WKUP_IRQHandler(void)
 {
-	SYSISR_PROCCES(_RTC_WKUP_IRQHandler);
+    SYSISR_PROCCES(_RTC_WKUP_IRQHandler);
 }
 void FLASH_IRQHandler(void)
 {

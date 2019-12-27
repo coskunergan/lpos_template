@@ -12,7 +12,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
-#define MSGQUEUE_OBJECT_SIZE sizeof(Template_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
 
@@ -29,7 +28,7 @@ extern void Template_Operation(Template_Data_Frame_t *data_msg);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, TEMPLATE_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -75,7 +74,7 @@ static void StartTask(void *argument)
 {
     Template_Data_Frame_t *data_msg;
     Template_Config_Frame_t *config_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[TEMPLATE_MSGQUEUE_OBJECT_SIZE];
 
     for(;;)
     {

@@ -127,7 +127,7 @@ void eMBRTUStart(void)
      */
     eRcvState = STATE_RX_INIT;
     vMBPortSerialEnable(TRUE, FALSE);
-    vMBPortTimersEnable();
+    //vMBPortTimersEnable();
 
     EXIT_CRITICAL_SECTION();
 }

@@ -51,12 +51,12 @@ typedef enum
  * link. Please note that this values are actually passed to the porting
  * layer and therefore not all parity modes might be available.
  */
-typedef enum
-{
-    MB_PAR_NONE,                /*!< No parity. */
-    MB_PAR_ODD,                 /*!< Odd parity. */
-    MB_PAR_EVEN                 /*!< Even parity. */
-} eMBParity;
+//typedef enum
+//{
+//    MB_PAR_NONE,                /*!< No parity. */
+//    MB_PAR_ODD,                 /*!< Odd parity. */
+//    MB_PAR_EVEN                 /*!< Even parity. */
+//} eMBParity;
 
 /* ----------------------- Supporting functions -----------------------------*/
 uint8_t            xMBPortEventInit(void);

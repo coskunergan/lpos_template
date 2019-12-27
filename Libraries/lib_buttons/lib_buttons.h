@@ -18,6 +18,8 @@ extern "C" {
 
 #include "main.h"
 
+#define BUTTONS_MSGQUEUE_OBJECT_SIZE (( sizeof(Buttons_Config_Frame_t) > sizeof(Buttons_Data_Frame_t) ) ? sizeof(Buttons_Config_Frame_t)  : sizeof(Buttons_Data_Frame_t))
+	
 typedef enum
 {
     eBUTTON_DATA_FRAME,

@@ -12,11 +12,12 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  5
-#define MSGQUEUE_OBJECT_SIZE sizeof(Buttons_Config_Frame_t)
 #define	BUTTON_CALLBACK_LIMIT 32
 #define BUTTON_LONGPRESS_PERIOD_TICK  3000
 
 static osMessageQueueId_t mq_id;
+
+uint16_t buttons_state;
 
 static void StartTask(void *argument);
 
@@ -35,7 +36,7 @@ static uint32_t Timer_Arg[eBUTTON_ID_NUMBEROFTYPE];
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, BUTTONS_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -89,8 +90,20 @@ static void StartTask(void *argument)
 {
     Buttons_Config_Frame_t *config_msg;
     Buttons_Data_Frame_t *data_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[BUTTONS_MSGQUEUE_OBJECT_SIZE];
     uint8_t i;
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Data_Frame_t modbus_msg =
+    {
+        .data = eMODBUS_ADD_RO_REG,
+        .ptr = &buttons_state,
+        .length = 1,
+        .addres = 1002,
+    };
+    SendDataMsg_Modbus(&modbus_msg);
+#endif
 
     for(;;)
     {

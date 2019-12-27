@@ -12,7 +12,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  5
-#define MSGQUEUE_OBJECT_SIZE sizeof(Glasslcd_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
 
@@ -28,7 +27,7 @@ extern void Glasslcd_Hw_DeInit(void);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, GLASSLCD_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -121,7 +120,7 @@ static void StartTask(void *argument)
 {
     Glasslcd_Data_Frame_t *data_msg;
     Glasslcd_Config_Frame_t *config_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[GLASSLCD_MSGQUEUE_OBJECT_SIZE];
 
     Clock_Demo();
 

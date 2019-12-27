@@ -15,6 +15,8 @@ extern "C" {
 
 #include "main.h"
 
+#define TEMPLATE_MSGQUEUE_OBJECT_SIZE (( sizeof(Template_Config_Frame_t) > sizeof(Template_Data_Frame_t) ) ? sizeof(Template_Config_Frame_t)  : sizeof(Template_Data_Frame_t))
+
 typedef enum
 {
     eTEMPLATE_DATA_FRAME,

@@ -15,6 +15,8 @@ extern "C" {
 
 #include "main.h"
 
+#define TEMPERATURE_MSGQUEUE_OBJECT_SIZE (( sizeof(Temperature_Config_Frame_t) > sizeof(Temperature_Data_Frame_t) ) ? sizeof(Temperature_Config_Frame_t)  : sizeof(Temperature_Data_Frame_t))
+
 typedef enum
 {
     eTEMPERATURE_DATA_FRAME,

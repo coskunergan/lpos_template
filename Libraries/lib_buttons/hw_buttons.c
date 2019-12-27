@@ -14,6 +14,8 @@
 #define BUTTON_PREEMPTPRIORITY 	15
 #define BUTTON_SUBPRIORITY  	0
 
+extern uint16_t buttons_state;
+
 static struct isr_list_t Button_Isr_Handle[eBUTTON_ID_NUMBEROFTYPE];
 
 /*********************************************************/
@@ -83,10 +85,12 @@ Button_State_t Get_Button_State(Button_ID_t button_id)
     if(state == ePRESSED)
     {
         SendDataMsg_Buttons(eBUTTON_TIMER_START, button_id);
+        buttons_state |= 1UL << button_id;
     }
     else
     {
         SendDataMsg_Buttons(eBUTTON_TIMER_STOP, button_id);
+        buttons_state &= ~(1UL << button_id);
     }
     return state;
 }

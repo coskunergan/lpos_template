@@ -47,15 +47,9 @@ uint8_t xMBPortTimersInit(uint16_t usTim1Timerout50us, uint32_t ulBaudRate)
 {
     Modbus_Data_Frame_t msg;
 
-    Timer_Period = (usTim1Timerout50us) / 20;
-
-    if(Timer_Period < 1)
-    {
-        Timer_Period = 1; // minimum timeout 1ms
-    }
+    Timer_Period = (usTim1Timerout50us / 20) + 1; // minimum timeout 1ms
 
     Timer_Sparse_Count = 0;
-
     if(ulBaudRate > 30000)
     {
         Timer_Sparse = 4;

@@ -12,9 +12,10 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
-#define MSGQUEUE_OBJECT_SIZE sizeof(Led_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
+
+static uint16_t leds_state;
 
 static void StartTask(void *argument);
 
@@ -27,7 +28,7 @@ extern void Led_Operation(Led_Data_Frame_t *data_msg);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, LED_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -103,9 +104,21 @@ static void StartTask(void *argument)
 {
     Led_Data_Frame_t *data_msg;
     Led_Config_Frame_t *config_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[LED_MSGQUEUE_OBJECT_SIZE];
 
     Button_Procces();
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Data_Frame_t modbus_msg =
+    {
+        .data = eMODBUS_ADD_RO_REG,
+        .ptr = &leds_state,
+        .length = 1,
+        .addres = 1001,
+    };
+    SendDataMsg_Modbus(&modbus_msg);
+#endif
 
     for(;;)
     {
@@ -130,6 +143,18 @@ static void StartTask(void *argument)
             {
                 data_msg = (Led_Data_Frame_t *)msg;
                 Led_Operation(data_msg);
+                switch(data_msg->state)
+                {
+                    case eLED_ON:
+                        leds_state |= (1UL << data_msg->led_id);
+                        break;
+                    case eLED_OFF:
+                        leds_state &= ~(1UL << data_msg->led_id);
+                        break;
+                    case eLED_TOGGLE:
+                        leds_state ^= (1UL << data_msg->led_id);
+                        break;
+                }
             }
         }
     }

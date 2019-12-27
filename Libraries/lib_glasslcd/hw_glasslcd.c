@@ -352,7 +352,7 @@ static void BSP_LCD_GLASS_Display_String(char *str)
                 break;
             case '\'':
                 *str = DEGREE_CHAR;
-                break;						
+                break;
             default:
                 *str = NULL_CHAR;
                 break;

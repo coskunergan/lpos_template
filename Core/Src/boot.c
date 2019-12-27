@@ -30,6 +30,21 @@ static void Boot_Init(void)
 /*********************************************************/
 static void BootTask(void *argument)
 {
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Config_Frame_t msg =
+    {
+        .config = eMODBUS_INIT,
+        .mode = MB_RTU,
+        .slave_addres = 10,
+        .port = 1,
+        .baudrate = 9600,
+        .parity = MB_PAR_EVEN
+    };
+    SendConfigMsg_Modbus(&msg);
+    osDelay(100);		
+#endif	
+	
 #ifdef LIB_BUTTONS
 #include "..\..\Libraries\lib_buttons\lib_buttons.h"
     SendConfigMsg_Buttons(eBUTTON_INIT, eBUTTON_ID_1, NULL);
@@ -56,10 +71,10 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 45,
-        .minute = 15,
-        .hour = 17,
-        .date = 27,  //25.day
-        .month = 10, //November
+        .minute = 38,
+        .hour = 13,
+        .date = 30,  //31.day
+        .month = 11, //December
         .year = 2019
     };
     SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
@@ -90,17 +105,6 @@ static void BootTask(void *argument)
 #ifdef LIB_TEMPERATURE
 #include "..\..\Libraries\lib_temperature\lib_temperature.h"
     SendConfigMsg_Temperature(eTEMPERATURE_INIT, ADC1_Mutex, 10000);
-    osDelay(100);
-#endif
-
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Config_Frame_t msg =
-    {
-        .config = eMODBUS_INIT,
-        .baudrate = 9600
-    };
-    SendConfigMsg_Modbus(&msg);
     osDelay(100);
 #endif
 

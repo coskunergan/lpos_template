@@ -15,6 +15,8 @@ extern "C" {
 
 #include "main.h"
 
+#define MSGQUEUE_OBJECT_SIZE (( sizeof(Voltage_Config_Frame_t) > sizeof(Voltage_Data_Frame_t) ) ? sizeof(Voltage_Config_Frame_t)  : sizeof(Voltage_Data_Frame_t))
+
 typedef enum
 {
     eVOLTAGE_DATA_FRAME,

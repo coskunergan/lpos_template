@@ -58,6 +58,7 @@ eMBErrorCode eMBSetSlaveID(uint8_t ucSlaveID, uint8_t xIsRunning, uint8_t const 
     if(usAdditionalLen + 2 < MB_FUNC_OTHER_REP_SLAVEID_BUF)
     {
         usMBSlaveIDLen = 0;
+        ucMBSlaveID[usMBSlaveIDLen++] = usAdditionalLen + 2;			
         ucMBSlaveID[usMBSlaveIDLen++] = ucSlaveID;
         ucMBSlaveID[usMBSlaveIDLen++] = (uint8_t)(xIsRunning ? 0xFF : 0x00);
         if(usAdditionalLen > 0)

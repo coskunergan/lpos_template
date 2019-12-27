@@ -116,7 +116,7 @@ eMBErrorCode eMBASCIIInit(uint8_t ucSlaveAddress, uint8_t ucPort, uint32_t ulBau
     {
         eStatus = MB_EPORTERR;
     }
-    else if(xMBPortTimersInit(MB_ASCII_TIMEOUT_SEC * 20000UL, ulBaudRate) != TRUE)
+    else if(xMBPortTimersInit(MB_ASCII_TIMEOUT_MS * 20UL, ulBaudRate) != TRUE)
     {
         eStatus = MB_EPORTERR;
     }

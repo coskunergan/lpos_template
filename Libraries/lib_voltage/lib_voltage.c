@@ -12,7 +12,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
-#define MSGQUEUE_OBJECT_SIZE sizeof(Voltage_Config_Frame_t)
 
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
@@ -83,6 +82,18 @@ static void StartTask(void *argument)
     Voltage_Config_Frame_t *config_msg;
     Voltage_Data_Frame_t *data_msg;
     uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Data_Frame_t modbus_msg =
+    {
+        .data = eMODBUS_ADD_RO_REG,
+        .ptr = &GlobalStats.ReferanceVoltageLevelmV,
+        .length = 1,
+        .addres = 1003,
+    };
+    SendDataMsg_Modbus(&modbus_msg);
+#endif
 
     for(;;)
     {

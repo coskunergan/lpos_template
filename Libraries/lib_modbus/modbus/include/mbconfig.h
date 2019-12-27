@@ -60,7 +60,7 @@ PR_BEGIN_EXTERN_C
  * a configuration option. It should be set to the maximum expected delay
  * time of the network.
  */
-#define MB_ASCII_TIMEOUT_SEC                    (  1 )
+#define MB_ASCII_TIMEOUT_MS                    (  1000 )
 
 /*! \brief Timeout to wait in ASCII prior to enabling transmitter.
  *

@@ -15,6 +15,8 @@ extern "C" {
 
 #include "main.h"
 
+#define GLASSLCD_MSGQUEUE_OBJECT_SIZE (( sizeof(Glasslcd_Config_Frame_t) > sizeof(Glasslcd_Data_Frame_t) ) ? sizeof(Glasslcd_Config_Frame_t)  : sizeof(Glasslcd_Data_Frame_t))
+
 typedef enum
 {
     LCD_DIGIT_POSITION_1 = 0,

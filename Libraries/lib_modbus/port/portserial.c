@@ -45,7 +45,7 @@
 
 uint8_t xMBPortSerialInit(uint8_t ucPORT, uint32_t ulBaudRate, uint8_t ucDataBits, eMBParity eParity)
 {
-    Modbus_Hw_Init(ulBaudRate, ucDataBits, eParity);
+    Modbus_Hw_Init(ucPORT, ulBaudRate, ucDataBits, eParity);
     return TRUE;
 }
 

@@ -12,7 +12,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
-#define MSGQUEUE_OBJECT_SIZE sizeof(Temperature_Config_Frame_t)
 
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
@@ -29,7 +28,7 @@ extern int8_t Temperature_Read(void);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, TEMPERATURE_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -82,7 +81,19 @@ static void StartTask(void *argument)
 {
     Temperature_Config_Frame_t *config_msg;
     Temperature_Data_Frame_t *data_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[TEMPERATURE_MSGQUEUE_OBJECT_SIZE];
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Data_Frame_t modbus_msg =
+    {
+        .data = eMODBUS_ADD_RO_REG,
+        .ptr = &GlobalStats.TemperatureLevelCelsius,
+        .length = 1,
+        .addres = 1004,
+    };
+    SendDataMsg_Modbus(&modbus_msg);
+#endif
 
     for(;;)
     {

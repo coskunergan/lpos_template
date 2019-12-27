@@ -13,7 +13,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
-#define MSGQUEUE_OBJECT_SIZE sizeof(Calendar_Config_Frame_t)
 
 //! Unix epoch year
 #define EPOCH_YEAR 1970
@@ -61,7 +60,7 @@ extern void Calendar_Disable(void);
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, CALENDAR_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
@@ -600,8 +599,20 @@ void calendar_add_second_to_date(struct calendar_date *date)
 static void StartTask(void *argument)
 {
     Calendar_Config_Frame_t *config_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[CALENDAR_MSGQUEUE_OBJECT_SIZE];
     uint8_t i;
+
+#ifdef LIB_MODBUS
+#include "..\..\Libraries\lib_modbus\lib_modbus.h"
+    Modbus_Data_Frame_t modbus_msg =
+    {
+        .data = eMODBUS_ADD_RW_REG,
+        .ptr = (void *) &date.second,
+        .length = 4, // 8 byte
+        .addres = 1,
+    };
+    SendDataMsg_Modbus(&modbus_msg);
+#endif
 
     for(;;)
     {

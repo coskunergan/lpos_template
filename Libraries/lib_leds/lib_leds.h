@@ -14,6 +14,8 @@ extern "C" {
 #endif
 
 #include "main.h"
+	
+#define LED_MSGQUEUE_OBJECT_SIZE (( sizeof(Led_Config_Frame_t) > sizeof(Led_Data_Frame_t) ) ? sizeof(Led_Config_Frame_t)  : sizeof(Led_Data_Frame_t))
 
 typedef enum
 {

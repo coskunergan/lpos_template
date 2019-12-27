@@ -15,7 +15,7 @@ extern "C" {
 
 #include "main.h"
 
-#define BUZZER_STRUCT_VERSION	1
+#define BUZZER_MSGQUEUE_OBJECT_SIZE (( sizeof(Buzzer_Config_Frame_t) > sizeof(Buzzer_Data_Frame_t) ) ? sizeof(Buzzer_Config_Frame_t)  : sizeof(Buzzer_Data_Frame_t))
 
 #define BUZZER_TONE_A 0
 #define BUZZER_TONE_NONE 255

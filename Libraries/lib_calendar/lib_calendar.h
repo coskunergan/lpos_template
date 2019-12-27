@@ -17,6 +17,8 @@ extern "C" {
 #include "stdint.h"
 #include "stdbool.h"
 
+#define CALENDAR_MSGQUEUE_OBJECT_SIZE (( sizeof(Calendar_Config_Frame_t) > sizeof(Calendar_Data_Frame_t) ) ? sizeof(Calendar_Config_Frame_t)  : sizeof(Calendar_Data_Frame_t))
+
 typedef enum
 {
     eCALENDAR_DATA_FRAME,
@@ -51,6 +53,11 @@ typedef enum
 typedef struct
 {
     Calendar_Frame_t frame_type;
+} Calendar_Data_Frame_t;
+
+typedef struct
+{
+    Calendar_Frame_t frame_type;
     Calendar_Config_t config;
 		struct calendar_date *date;
     void (*vfPtr)(Calendar_Passed_t passed);
@@ -70,10 +77,10 @@ struct calendar_date
     uint8_t minute;        //!< 0-59
     uint8_t hour;          //!< 0-23
     uint8_t date;          //!< 0-30 \note First day of month is 0, not 1.
+	  uint8_t dayofweek;     //!< 0 Sunday  - 6 Saturday	
     uint8_t month;         //!< 0 January - 11 December
     uint16_t year;         //!< 1970-2105
-    uint8_t dayofweek;     //!< 0 Sunday  - 6 Saturday
-};
+} __attribute__ ((aligned));
 
 #define CALENDAR_CALLBACK_FUNC(_PASSED) 									 					\
 		do{																															\

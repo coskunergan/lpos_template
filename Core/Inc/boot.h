@@ -18,7 +18,7 @@ extern "C" {
 typedef struct
 {    
 		uint32_t ReferanceVoltageLevelmV;
-		int8_t TemperatureLevelCelsius;    
+		int16_t TemperatureLevelCelsius;    
 		uint8_t CPULevelPercent;  		
 } GlobalStats_t;
 

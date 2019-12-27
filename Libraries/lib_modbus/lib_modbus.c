@@ -18,7 +18,6 @@
 FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  8
-#define MSGQUEUE_OBJECT_SIZE sizeof(Modbus_Data_Frame_t)
 
 static osMessageQueueId_t mq_id;
 
@@ -27,9 +26,9 @@ static uint32_t MB_Timer_Period;
 uint8_t SleepAbortWhileTransmitAndReceive = FALSE;
 
 uint16_t   usRegInputStart = REG_INPUT_START;
-uint16_t   usRegInputBuf[REG_INPUT_NREGS];
+uint16_t   *usRegInputBuf[REG_INPUT_NREGS];
 uint16_t   usRegHoldingStart = REG_HOLDING_START;
-uint16_t   usRegHoldingBuf[REG_HOLDING_NREGS];
+uint16_t   *usRegHoldingBuf[REG_HOLDING_NREGS];
 
 extern void Modbus_Hw_DeInit(void);
 static void StartTask(void *argument);
@@ -41,13 +40,13 @@ osThreadId_t modbus_task;
 /*********************************************************/
 static void Lib_Init(void)
 {
-    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MSGQUEUE_OBJECT_SIZE, NULL);
+    mq_id = osMessageQueueNew(MSGQUEUE_OBJECTS, MODBUS_MSGQUEUE_OBJECT_SIZE, NULL);
 
     const osThreadAttr_t defaultTask_attributes =
     {
         .name = "ModbusTask",
         .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 388
+        .stack_size = 512
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
     {
@@ -84,15 +83,24 @@ osStatus_t SendConfigMsg_Modbus(Modbus_Config_Frame_t *frame)
 eMBErrorCode eMBRegInputCB(uint8_t *pucRegBuffer, uint16_t usAddress, uint16_t usNRegs)
 {
     eMBErrorCode    eStatus = MB_ENOERR;
-    int             iRegIndex;
+    uint16_t iRegIndex;
 
     if((usAddress >= REG_INPUT_START) && (usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS))
     {
-        iRegIndex = (int)(usAddress - usRegInputStart);
+        iRegIndex = (uint16_t)(usAddress - usRegInputStart);
         while(usNRegs > 0)
         {
-            *pucRegBuffer++ = (unsigned char)(usRegInputBuf[iRegIndex] >> 8);
-            *pucRegBuffer++ = (unsigned char)(usRegInputBuf[iRegIndex] & 0xFF);
+            if(usRegInputBuf[iRegIndex] != NULL)
+            {
+                *pucRegBuffer++ = (uint8_t)(*usRegInputBuf[iRegIndex] >> 8);
+                *pucRegBuffer++ = (uint8_t)(*usRegInputBuf[iRegIndex] & 0xFF);
+            }
+            else
+            {
+                *pucRegBuffer++ = 0;
+                *pucRegBuffer++ = 0;
+                //eStatus = MB_ENOREG;
+            }
             iRegIndex++;
             usNRegs--;
         }
@@ -107,32 +115,53 @@ eMBErrorCode eMBRegInputCB(uint8_t *pucRegBuffer, uint16_t usAddress, uint16_t u
 /*********************************************************/
 eMBErrorCode eMBRegHoldingCB(uint8_t *pucRegBuffer, uint16_t usAddress, uint16_t usNRegs, eMBRegisterMode eMode)
 {
-    eMBErrorCode    eStatus = MB_ENOERR;
-    int             iRegIndex;
+    eMBErrorCode eStatus = MB_ENOERR;
+    uint16_t iRegIndex;
 
     if((usAddress >= REG_HOLDING_START) && (usAddress + usNRegs <= REG_HOLDING_START + REG_HOLDING_NREGS))
     {
-        iRegIndex = (int)(usAddress - usRegHoldingStart);
+        iRegIndex = (uint16_t)(usAddress - usRegHoldingStart);
         switch(eMode)
         {
             case MB_REG_READ:
+                osKernelLock();
                 while(usNRegs > 0)
                 {
-                    *pucRegBuffer++ = (unsigned char)(usRegHoldingBuf[iRegIndex] >> 8);
-                    *pucRegBuffer++ = (unsigned char)(usRegHoldingBuf[iRegIndex] & 0xFF);
+                    if(usRegHoldingBuf[iRegIndex] != NULL)
+                    {
+                        *pucRegBuffer++ = (uint8_t)(*usRegHoldingBuf[iRegIndex] >> 8);
+                        *pucRegBuffer++ = (uint8_t)(*usRegHoldingBuf[iRegIndex] & 0xFF);
+                    }
+                    else
+                    {
+                        *pucRegBuffer++ = 0;
+                        *pucRegBuffer++ = 0;
+                        //eStatus = MB_ENOREG;
+                    }
                     iRegIndex++;
                     usNRegs--;
                 }
+                osKernelUnlock();
                 break;
 
             case MB_REG_WRITE:
+                osKernelLock();
                 while(usNRegs > 0)
                 {
-                    usRegHoldingBuf[iRegIndex] = *pucRegBuffer++ << 8;
-                    usRegHoldingBuf[iRegIndex] |= *pucRegBuffer++;
+                    if(usRegHoldingBuf[iRegIndex] != NULL)
+                    {
+                        *usRegHoldingBuf[iRegIndex] = *pucRegBuffer++ << 8;
+                        *usRegHoldingBuf[iRegIndex] |= *pucRegBuffer++;
+                    }
+                    else
+                    {
+                        //eStatus = MB_ENOREG;
+                    }
                     iRegIndex++;
                     usNRegs--;
                 }
+                osKernelUnlock();
+                break;
         }
     }
     else
@@ -152,14 +181,97 @@ eMBErrorCode eMBRegDiscreteCB(uint8_t *pucRegBuffer, uint16_t usAddress, uint16_
     return MB_ENOREG;
 }
 /*********************************************************/
+eMBErrorCode eMB_AddReadOnlyReg(void *pucRegBuffer, uint16_t usAddress, uint16_t usNRegs)
+{
+    eMBErrorCode  eStatus = MB_ENOERR;
+    uint16_t  iRegIndex;
+    uint16_t *RegPtr = pucRegBuffer;
+
+    if(pucRegBuffer == NULL)
+    {
+        eStatus = MB_EINVAL;
+    }
+    else if((usAddress >= REG_INPUT_START) && (usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS))
+    {
+        iRegIndex = (uint16_t)(usAddress - usRegInputStart);
+        osKernelLock();
+        while(usNRegs > 0)
+        {
+            usRegInputBuf[iRegIndex] =	RegPtr++;
+            iRegIndex++;
+            usNRegs--;
+        }
+        osKernelUnlock();
+    }
+    else
+    {
+        eStatus = MB_ENOREG;
+    }
+
+    return eStatus;
+}
+/*********************************************************/
+eMBErrorCode eMB_AddReadWriteReg(void *pucRegBuffer, uint16_t usAddress, uint16_t usNRegs)
+{
+    eMBErrorCode  eStatus = MB_ENOERR;
+    uint16_t  iRegIndex;
+    uint16_t *RegPtr = pucRegBuffer;
+
+    if(pucRegBuffer == NULL)
+    {
+        eStatus = MB_EINVAL;
+    }
+    else if((usAddress >= REG_HOLDING_START) && (usAddress + usNRegs <= REG_HOLDING_START + REG_HOLDING_NREGS))
+    {
+        iRegIndex = (uint16_t)(usAddress - usRegHoldingStart);
+        osKernelLock();
+        while(usNRegs > 0)
+        {
+            usRegHoldingBuf[iRegIndex] =	RegPtr++;
+            iRegIndex++;
+            usNRegs--;
+        }
+        osKernelUnlock();
+    }
+    else
+    {
+        eStatus = MB_ENOREG;
+    }
+
+    return eStatus;
+}
+/*********************************************************/
+eMBErrorCode eMB_DeleteRegister(uint16_t usAddress, uint16_t usNRegs)
+{
+    eMBErrorCode    eStatus = MB_ENOERR;
+    uint16_t iRegIndex;
+
+    if((usAddress >= REG_INPUT_START) && (usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS))
+    {
+        iRegIndex = (uint16_t)(usAddress - usRegInputStart);
+        osKernelLock();
+        while(usNRegs > 0)
+        {
+            usRegInputBuf[iRegIndex] =	0;
+            iRegIndex++;
+            usNRegs--;
+        }
+        osKernelUnlock();
+    }
+    else
+    {
+        eStatus = MB_ENOREG;
+    }
+
+    return eStatus;
+}
+/*********************************************************/
 void MB_Timer_Callback(void *arg)
 {
     uint8_t bTaskWoken = FALSE;
     Modbus_Data_Frame_t msg;
 
     bTaskWoken = pxMBPortCBTimerExpired();
-
-    SleepAbortWhileTransmitAndReceive = FALSE;
 
     if(bTaskWoken == TRUE)
     {
@@ -172,9 +284,14 @@ static void StartTask(void *argument)
 {
     Modbus_Data_Frame_t *data_msg;
     Modbus_Config_Frame_t *config_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    uint8_t msg[MODBUS_MSGQUEUE_OBJECT_SIZE];
 
-    const uint8_t ucSlaveID[] = { 0xAA, 0xBB, 0xCC };
+    uint16_t test = 0;
+
+    const uint8_t ucSlaveID[] = { "Coskun ERGAN" };
+    const uint8_t ucModelNo = 0x10;
+
+    usRegInputBuf[0] = &test;
 
     for(;;)
     {
@@ -186,14 +303,14 @@ static void StartTask(void *argument)
                 switch(config_msg->config)
                 {
                     case eMODBUS_INIT:
-                        if(MB_ENOERR != eMBInit(MB_ASCII, 0x0A, 1, BAUD_CORRECTION(config_msg->baudrate), MB_PAR_EVEN))
+                        if(MB_ENOERR != eMBInit(config_msg->mode, config_msg->slave_addres, config_msg->port, BAUD_CORRECTION(config_msg->baudrate), config_msg->parity))
                         {
                             /* Can not initialize. Add error handling code here. */
                             Error_Handler();
                         }
                         else
                         {
-                            if(MB_ENOERR != eMBSetSlaveID(0x34, TRUE, ucSlaveID, 3))
+                            if(MB_ENOERR != eMBSetSlaveID(ucModelNo, TRUE, ucSlaveID, sizeof(ucSlaveID)))
                             {
                                 /* Can not set slave id. Check arguments */
                                 Error_Handler();
@@ -253,6 +370,24 @@ static void StartTask(void *argument)
                             Error_Handler();
                         }
                         break;
+                    case eMODBUS_ADD_RO_REG:
+                        if(MB_ENOERR != eMB_AddReadOnlyReg(data_msg->ptr, data_msg->addres, data_msg->length))
+                        {
+                            Error_Handler();
+                        }
+                        break;
+                    case eMODBUS_ADD_RW_REG:
+                        if(MB_ENOERR != eMB_AddReadWriteReg(data_msg->ptr, data_msg->addres, data_msg->length))
+                        {
+                            Error_Handler();
+                        }
+                        break;
+                    case eMODBUS_DEL_REG:
+                        if(MB_ENOERR != eMB_DeleteRegister(data_msg->addres, data_msg->length))
+                        {
+                            Error_Handler();
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -262,8 +397,8 @@ static void StartTask(void *argument)
         if(osMessageQueueGetCount(mq_id) == 0)
         {
             eMBPoll();
-            usRegInputBuf[0]++;
-						osThreadYield();
+            test++;
+            osThreadYield();
         }
         //------------------------------------------------------------
     }
