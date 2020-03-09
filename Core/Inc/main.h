@@ -41,6 +41,7 @@ extern "C" {
 #include "sys_lib.h"
 #include "sys_isr.h"
 #include "sys_list.h"
+#include "SEGGER.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

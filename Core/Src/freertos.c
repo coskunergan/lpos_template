@@ -24,7 +24,7 @@
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */     
+/* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
@@ -50,7 +50,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+
 /* USER CODE END FunctionPrototypes */
 
 /* Pre/Post sleep processing prototypes */
@@ -60,18 +60,18 @@ void PostSleepProcessing(uint32_t *ulExpectedIdleTime);
 /* USER CODE BEGIN PREPOSTSLEEP */
 __weak void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
 {
-/* place for user code */ 
+    /* place for user code */
 }
 
 __weak void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
 {
-/* place for user code */
+    /* place for user code */
 }
 /* USER CODE END PREPOSTSLEEP */
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

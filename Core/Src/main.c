@@ -91,11 +91,11 @@ int main(void)
     SystemClock_Config();
 
     /* USER CODE BEGIN SysInit */
-
+    SEGGER_SYSVIEW_Conf();
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
-    MX_IWDG_Init();
+//    MX_IWDG_Init();
     MX_GPIO_Init();
     MX_LPTIM1_Init();
     /* USER CODE BEGIN 2 */
