@@ -53,7 +53,9 @@ osThreadId_t IWDTTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 static void MX_LPTIM1_Init(void);
+#endif
 static void MX_GPIO_Init(void);
 static void MX_IWDG_Init(void);
 void StartIWDTTask(void *argument);
@@ -95,9 +97,11 @@ int main(void)
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
-//    MX_IWDG_Init();
+    MX_IWDG_Init();
     MX_GPIO_Init();
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
     MX_LPTIM1_Init();
+#endif
     /* USER CODE BEGIN 2 */
 
     /* USER CODE END 2 */
@@ -202,6 +206,7 @@ void SystemClock_Config(void)
     }
 }
 
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )    
 /**
   * @brief LPTIM1 Initialization Function
   * @param None
@@ -235,7 +240,7 @@ static void MX_LPTIM1_Init(void)
     /* USER CODE END LPTIM1_Init 2 */
 
 }
-
+#endif
 /**
   * @brief IWDG Initialization Function
   * @param None

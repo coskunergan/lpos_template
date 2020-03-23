@@ -24,6 +24,8 @@
  *
  * 1 tab == 4 spaces!
  */
+ 
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 
 /* Standard includes. */
 #include <limits.h>
@@ -247,5 +249,5 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         vTaskStepTick(ulCompleteTickPeriods);
     }
 }
-
+#endif
 
