@@ -67,7 +67,7 @@ uint8_t xMBPortTimersInit(uint16_t usTim1Timerout50us, uint32_t ulBaudRate)
     msg.timer_period = Timer_Period;
     SendDataMsg_Modbus(&msg);
 
-    return TRUE;
+    return MB_TRUE;
 }
 
 void vMBPortTimersEnable()
@@ -97,6 +97,9 @@ void vMBPortTimerClose(void)
 
 void vMBPortTimersDelay(uint16_t usTimeOutMS)
 {
-    osDelay(usTimeOutMS);
+		osSemaphoreId_t MB_Sem = osSemaphoreNew(1,0,NULL);
+		osSemaphoreAcquire(MB_Sem,usTimeOutMS);	
+		osSemaphoreDelete(MB_Sem);		
+    //osDelay(usTimeOutMS);			
 }
 

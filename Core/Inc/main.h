@@ -42,6 +42,7 @@ extern "C" {
 #include "sys_isr.h"
 #include "sys_list.h"
 #include "SEGGER.h"
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

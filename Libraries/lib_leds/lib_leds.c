@@ -11,7 +11,7 @@
 #ifdef LIB_LEDS
 FIRST_START_OS(Lib_Init);
 
-#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECTS  8
 
 static osMessageQueueId_t mq_id;
 
@@ -83,6 +83,7 @@ static void Button_Blink_ISR(Button_State_t state)
     }
     else if(state == eLONGPRESSED)
     {
+        DBG_PRINTF("Button Long Presed!");
         SendDataMsg_Led(eLED_ID_1, eLED_OFF);
         SendDataMsg_Led(eLED_ID_2, eLED_ON);
     }
@@ -146,12 +147,15 @@ static void StartTask(void *argument)
                 switch(data_msg->state)
                 {
                     case eLED_ON:
+                        DBG_PRINTF("Led %d ON", data_msg->led_id);
                         leds_state |= (1UL << data_msg->led_id);
                         break;
                     case eLED_OFF:
+                        DBG_PRINTF("Led %d OFF", data_msg->led_id);
                         leds_state &= ~(1UL << data_msg->led_id);
                         break;
                     case eLED_TOGGLE:
+                        DBG_PRINTF("Led %d TOGGLE", data_msg->led_id);
                         leds_state ^= (1UL << data_msg->led_id);
                         break;
                 }

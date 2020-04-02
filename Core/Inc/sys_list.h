@@ -53,6 +53,6 @@ void *SysList_Item_Next(void *item);
 
 #ifdef __cplusplus
 }
-#endif		
-		
+#endif
+
 #endif /* SYS_LIST_H_ */

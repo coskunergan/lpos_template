@@ -24,8 +24,7 @@
  *
  * 1 tab == 4 spaces!
  */
- 
-#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
+
 
 /* Standard includes. */
 #include <limits.h>
@@ -36,6 +35,8 @@
 
 /* ST library functions. */
 #include "stm32l4xx_hal.h"
+
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 
 /*-----------------------------------------------------------*/
 
@@ -184,11 +185,11 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
          */
         if(xModifiableIdleTime > (TickType_t)(0.03 * configTICK_RATE_HZ))
         {
-            //HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);	// Running if greater than 30ms.
+            HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);	// Running if greater than 30ms.
         }
         else if(xModifiableIdleTime > 0)
         {
-            //HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI);	// Running if between 1 of 29ms.
+            HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI);	// Running if between 1 of 29ms.
         }
         /*
          * Let the application carry out post-sleep processing

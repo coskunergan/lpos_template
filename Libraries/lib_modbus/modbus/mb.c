@@ -341,7 +341,7 @@ eMBErrorCode eMBPoll(void)
 
     /* Check if there is a event available. If not return control to caller.
      * Otherwise we will handle the event. */
-    if(xMBPortEventGet(&eEvent) == TRUE)
+    if(xMBPortEventGet(&eEvent) == MB_TRUE)
     {
         switch(eEvent)
         {

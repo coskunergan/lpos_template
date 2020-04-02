@@ -46,11 +46,11 @@ static osMessageQueueId_t xQueueHdl;
 /* ----------------------- Start implementation -----------------------------*/
 uint8_t xMBPortEventInit(void)
 {
-    uint8_t bStatus = FALSE;
+    uint8_t bStatus = MB_FALSE;
     //if( 0 != ( xQueueHdl = xQueueCreate( 1, sizeof( eMBEventType ) ) ) )
     if(0 != (xQueueHdl = osMessageQueueNew(3, sizeof(eMBEventType) , NULL)))
     {
-        bStatus = TRUE;
+        bStatus = MB_TRUE;
     }
     return bStatus;
 }
@@ -72,11 +72,11 @@ void vMBPortEventClose(void)
 
 uint8_t xMBPortEventPost(eMBEventType eEvent)
 {
-    uint8_t bStatus = FALSE;
+    uint8_t bStatus = MB_FALSE;
 
     if(osMessageQueueGetSpace(xQueueHdl) == 0)
     {
-        bStatus = TRUE;
+        bStatus = MB_TRUE;
         //Error_Handler();
     }
     else
@@ -84,7 +84,7 @@ uint8_t xMBPortEventPost(eMBEventType eEvent)
         //( void )xQueueSend( xQueueHdl, ( const void * )&eEvent, pdFALSE );
         if(osMessageQueuePut(xQueueHdl, (const void *)&eEvent, osPriorityNone, 0) == osOK)
         {
-            bStatus = TRUE;
+            bStatus = MB_TRUE;
         }
     }
     return bStatus;
@@ -92,12 +92,12 @@ uint8_t xMBPortEventPost(eMBEventType eEvent)
 
 uint8_t xMBPortEventGet(eMBEventType *peEvent)
 {
-    uint8_t xEventHappened = FALSE;
+    uint8_t xEventHappened = MB_FALSE;
 
     //if( pdTRUE == xQueueReceive( xQueueHdl, peEvent, portTICK_RATE_MS * 50 ) )
     if(osOK == osMessageQueueGet(xQueueHdl, peEvent, NULL, 0))
     {
-        xEventHappened = TRUE;
+        xEventHappened = MB_TRUE;
     }
     return xEventHappened;
 }

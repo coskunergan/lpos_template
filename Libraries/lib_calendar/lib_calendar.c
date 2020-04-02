@@ -12,7 +12,7 @@
 #ifdef LIB_CALENDAR
 FIRST_START_OS(Lib_Init);
 
-#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECTS  5
 
 //! Unix epoch year
 #define EPOCH_YEAR 1970

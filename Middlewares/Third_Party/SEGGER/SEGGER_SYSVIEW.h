@@ -75,6 +75,9 @@ extern "C" {
 **********************************************************************
 */
 
+#define SEGGER_DBG_PRINTF 1
+#define DBG_PRINTF(args ...) if (SEGGER_DBG_PRINTF) SEGGER_SYSVIEW_PrintfTarget(args)
+	
 #define SEGGER_SYSVIEW_MAJOR          3
 #define SEGGER_SYSVIEW_MINOR          10
 #define SEGGER_SYSVIEW_REV            0

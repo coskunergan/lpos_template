@@ -11,7 +11,7 @@
 #ifdef LIB_BUZZER
 FIRST_START_OS(Lib_Init);
 
-#define MSGQUEUE_OBJECTS  3
+#define MSGQUEUE_OBJECTS  8
 
 static osMessageQueueId_t mq_id;
 
@@ -100,7 +100,8 @@ static void StartTask(void *argument)
     Buzzer_Data_Frame_t *data_msg;
     Buzzer_Config_Frame_t *config_msg;
     uint8_t msg[BUZZER_MSGQUEUE_OBJECT_SIZE];
-
+		osSemaphoreId_t Buzzer_Sem = osSemaphoreNew(1,0,NULL);
+	
     Button_Procces();
 
     for(;;)
@@ -128,20 +129,23 @@ static void StartTask(void *argument)
                 if(data_msg->tone == 0)// buzzer active tone
                 {
                     Buzzer_Operation(eBUZZER_ON);
-                    osDelay(data_msg->active_time);
+                    DBG_PRINTF("Buzzer Beep %d ms", data_msg->active_time);
+
+										osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time);			
                     Buzzer_Operation(eBUZZER_OFF);
                 }
                 else if(data_msg->tone == 255)// buzzer ignore tone
                 {
                     Buzzer_Operation(eBUZZER_OFF);
-                    osDelay(data_msg->active_time);// buzzer ignore tone
+										osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time);	// buzzer ignore tone	
                 }
                 else
                 {
+                    DBG_PRINTF("Buzzer Tone %d", data_msg->tone);
                     for(int i = 0; i < data_msg->tone; i++)// buzzer frequence tone
                     {
                         Buzzer_Operation(eBUZZER_TOGGLE);
-                        osDelay(data_msg->active_time / data_msg->tone);
+												osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time / data_msg->tone);		
                     }
                     Buzzer_Operation(eBUZZER_OFF);
                 }

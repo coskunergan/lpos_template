@@ -129,7 +129,7 @@ int main(void)
     const osThreadAttr_t IWDTTask_attributes =
     {
         .name = "IWDTTask",
-        .priority = (osPriority_t) osPriorityIdle,
+        .priority = (osPriority_t) osPriorityLow,
         .stack_size = 128
     };
     IWDTTaskHandle = osThreadNew(StartIWDTTask, NULL, &IWDTTask_attributes);
@@ -206,7 +206,7 @@ void SystemClock_Config(void)
     }
 }
 
-#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )    
+#if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 /**
   * @brief LPTIM1 Initialization Function
   * @param None
@@ -368,14 +368,15 @@ static void MX_GPIO_Init(void)
 void StartIWDTTask(void *argument)
 {
     /* USER CODE BEGIN 5 */
+    //osSemaphoreId_t WDT_Sem = osSemaphoreNew(1,0,NULL);
     /* Infinite loop */
     for(;;)
     {
         HAL_IWDG_Refresh(&hiwdg);
-
+        //osSemaphoreAcquire(WDT_Sem,500);
         osDelay(500);
-
-        //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test
+        //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test	for nucleo
+        //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_6);// test
     }
     /* USER CODE END 5 */
 }

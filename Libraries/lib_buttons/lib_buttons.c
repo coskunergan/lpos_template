@@ -11,7 +11,7 @@
 #ifdef LIB_BUTTONS
 FIRST_START_OS(Lib_Init);
 
-#define MSGQUEUE_OBJECTS  5
+#define MSGQUEUE_OBJECTS  16
 #define	BUTTON_CALLBACK_LIMIT 32
 #define BUTTON_LONGPRESS_PERIOD_TICK  3000
 
@@ -83,6 +83,7 @@ osStatus_t SendConfigMsg_Buttons(Button_Config_t config, Button_ID_t button_id, 
 /*********************************************************/
 void Timers_Callback(void *arg)
 {
+    DBG_PRINTF("Button %d Long Pressed", *((uint32_t *)(arg)));
     BUTTON_CALLBACK_FUNC(*((uint32_t *)(arg)), eLONGPRESSED);
 }
 /*********************************************************/
@@ -173,6 +174,7 @@ static void StartTask(void *argument)
                             Timer_Arg[data_msg->button_id] = data_msg->button_id;
                             Timer_ID[data_msg->button_id] = osTimerNew(Timers_Callback, osTimerOnce, &Timer_Arg[data_msg->button_id], NULL);//create timer
                             osTimerStart(Timer_ID[data_msg->button_id], BUTTON_LONGPRESS_PERIOD_TICK);
+														DBG_PRINTF("Button %d Pressed", data_msg->button_id);
                         }
                         break;
                     case	eBUTTON_TIMER_STOP:

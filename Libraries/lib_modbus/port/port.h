@@ -35,7 +35,7 @@
 #include "..\..\Libraries\lib_modbus\lib_modbus.h"
 
 /* ----------------------- Defines ------------------------------------------*/
-#define	INLINE                      inline
+#define	MB_INLINE                   inline
 #define PR_BEGIN_EXTERN_C           extern "C" {
 #define	PR_END_EXTERN_C             }
 
@@ -44,12 +44,12 @@
 
 #define assert( x )
 
-#ifndef TRUE
-#define TRUE                                    1
+#ifndef MB_TRUE
+#define MB_TRUE                                    1
 #endif
 
-#ifndef FALSE
-#define FALSE                                   0
+#ifndef MB_FALSE
+#define MB_FALSE                                   0
 #endif
 
 #define MB_PORT_HAS_CLOSE	                    1

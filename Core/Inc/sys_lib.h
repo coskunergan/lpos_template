@@ -15,7 +15,6 @@ extern "C" {
 
 #include "main.h"
 
-
 typedef struct
 {
     uint32_t  key;

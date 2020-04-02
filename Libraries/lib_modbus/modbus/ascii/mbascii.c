@@ -112,11 +112,11 @@ eMBErrorCode eMBASCIIInit(uint8_t ucSlaveAddress, uint8_t ucPort, uint32_t ulBau
     ENTER_CRITICAL_SECTION();
     ucMBLFCharacter = MB_ASCII_DEFAULT_LF;
 
-    if(xMBPortSerialInit(ucPort, ulBaudRate, 7, eParity) != TRUE)
+    if(xMBPortSerialInit(ucPort, ulBaudRate, 7, eParity) != MB_TRUE)
     {
         eStatus = MB_EPORTERR;
     }
-    else if(xMBPortTimersInit(MB_ASCII_TIMEOUT_MS * 20UL, ulBaudRate) != TRUE)
+    else if(xMBPortTimersInit(MB_ASCII_TIMEOUT_MS * 20UL, ulBaudRate) != MB_TRUE)
     {
         eStatus = MB_EPORTERR;
     }
@@ -129,7 +129,7 @@ eMBErrorCode eMBASCIIInit(uint8_t ucSlaveAddress, uint8_t ucPort, uint32_t ulBau
 void eMBASCIIStart(void)
 {
     ENTER_CRITICAL_SECTION();
-    vMBPortSerialEnable(TRUE, FALSE);
+    vMBPortSerialEnable(MB_TRUE, MB_FALSE);
     eRcvState = STATE_RX_IDLE;
     EXIT_CRITICAL_SECTION();
 
@@ -140,7 +140,7 @@ void eMBASCIIStart(void)
 void eMBASCIIStop(void)
 {
     ENTER_CRITICAL_SECTION();
-    vMBPortSerialEnable(FALSE, FALSE);
+    vMBPortSerialEnable(MB_FALSE, MB_FALSE);
     vMBPortTimersDisable();
     EXIT_CRITICAL_SECTION();
 }
@@ -203,7 +203,7 @@ eMBErrorCode eMBASCIISend(uint8_t ucSlaveAddress, const uint8_t *pucFrame, uint1
 
         /* Activate the transmitter. */
         eSndState = STATE_TX_START;
-        vMBPortSerialEnable(FALSE, TRUE);
+        vMBPortSerialEnable(MB_FALSE, MB_TRUE);
     }
     else
     {
@@ -215,7 +215,7 @@ eMBErrorCode eMBASCIISend(uint8_t ucSlaveAddress, const uint8_t *pucFrame, uint1
 
 uint8_t xMBASCIIReceiveFSM(void)
 {
-    uint8_t xNeedPoll = FALSE;
+    uint8_t xNeedPoll = MB_FALSE;
     uint8_t ucByte;
     uint8_t ucResult;
 
@@ -323,7 +323,7 @@ uint8_t xMBASCIIReceiveFSM(void)
 
 uint8_t xMBASCIITransmitFSM(void)
 {
-    uint8_t xNeedPoll = FALSE;
+    uint8_t xNeedPoll = MB_FALSE;
     uint8_t ucByte;
 
     assert(eRcvState == STATE_RX_IDLE);
@@ -385,7 +385,7 @@ uint8_t xMBASCIITransmitFSM(void)
 
             /* Disable transmitter. This prevents another transmit buffer
              * empty interrupt. */
-            vMBPortSerialEnable(TRUE, FALSE);
+            vMBPortSerialEnable(MB_TRUE, MB_FALSE);
             eSndState = STATE_TX_IDLE;
             break;
 
@@ -393,7 +393,7 @@ uint8_t xMBASCIITransmitFSM(void)
          * idle state.  */
         case STATE_TX_IDLE:
             /* enable receiver/disable transmitter. */
-            vMBPortSerialEnable(TRUE, FALSE);
+            vMBPortSerialEnable(MB_TRUE, MB_FALSE);
             break;
     }
 
@@ -419,7 +419,7 @@ uint8_t xMBASCIITimerT1SExpired(void)
     vMBPortTimersDisable();
 
     /* no context switch required. */
-    return FALSE;
+    return MB_FALSE;
 }
 
 static uint8_t prvucMBCHAR2BIN(uint8_t ucCharacter)

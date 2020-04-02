@@ -23,7 +23,7 @@ static osMessageQueueId_t mq_id;
 
 static osTimerId_t MB_Timer_ID;
 static uint32_t MB_Timer_Period;
-uint8_t SleepAbortWhileTransmitAndReceive = FALSE;
+uint8_t SleepAbortWhileTransmitAndReceive = MB_FALSE;
 
 uint16_t   usRegInputStart = REG_INPUT_START;
 uint16_t   *usRegInputBuf[REG_INPUT_NREGS];
@@ -268,12 +268,12 @@ eMBErrorCode eMB_DeleteRegister(uint16_t usAddress, uint16_t usNRegs)
 /*********************************************************/
 void MB_Timer_Callback(void *arg)
 {
-    uint8_t bTaskWoken = FALSE;
+    uint8_t bTaskWoken = MB_FALSE;
     Modbus_Data_Frame_t msg;
 
     bTaskWoken = pxMBPortCBTimerExpired();
 
-    if(bTaskWoken == TRUE)
+    if(bTaskWoken == MB_TRUE)
     {
         msg.data = eMODBUS_TASKWOKEN;
         SendDataMsg_Modbus(&msg);
@@ -310,7 +310,7 @@ static void StartTask(void *argument)
                         }
                         else
                         {
-                            if(MB_ENOERR != eMBSetSlaveID(ucModelNo, TRUE, ucSlaveID, sizeof(ucSlaveID)))
+                            if(MB_ENOERR != eMBSetSlaveID(ucModelNo, MB_TRUE, ucSlaveID, sizeof(ucSlaveID)))
                             {
                                 /* Can not set slave id. Check arguments */
                                 Error_Handler();
@@ -355,14 +355,14 @@ static void StartTask(void *argument)
                         {
                             Error_Handler();
                         }
-                        SleepAbortWhileTransmitAndReceive = TRUE;
+                        SleepAbortWhileTransmitAndReceive = MB_TRUE;
                         break;
                     case eMODBUS_TIMER_STOP:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerStop(MB_Timer_ID)))
                         {
                             Error_Handler();
                         }
-                        SleepAbortWhileTransmitAndReceive = FALSE;
+                        SleepAbortWhileTransmitAndReceive = MB_FALSE;
                         break;
                     case eMODBUS_TIMER_CLOSE:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerDelete(MB_Timer_ID)))

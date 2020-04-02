@@ -46,7 +46,7 @@
 uint8_t xMBPortSerialInit(uint8_t ucPORT, uint32_t ulBaudRate, uint8_t ucDataBits, eMBParity eParity)
 {
     Modbus_Hw_Init(ucPORT, ulBaudRate, ucDataBits, eParity);
-    return TRUE;
+    return MB_TRUE;
 }
 
 void vMBPortSerialEnable(uint8_t xRxEnable, uint8_t xTxEnable)
@@ -63,12 +63,12 @@ void vMBPortSerialClose(void)
 uint8_t xMBPortSerialPutByte(uint8_t ucByte)
 {
     Modbus_Hw_SendByte(ucByte);
-    return TRUE;
+    return MB_TRUE;
 }
 
 uint8_t xMBPortSerialGetByte(uint8_t *pucByte)
 {
     *pucByte = Modbus_Hw_GetByte();
-    return TRUE;
+    return MB_TRUE;
 }
 

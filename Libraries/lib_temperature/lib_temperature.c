@@ -137,6 +137,7 @@ static void StartTask(void *argument)
                     case eTEMPERATURE_REFRESH:
                         osMutexAcquire(*Hw_Mutex, osWaitForever);
                         GlobalStats.TemperatureLevelCelsius = Temperature_Read();
+                        DBG_PRINTF("Temperature: %d C", GlobalStats.TemperatureLevelCelsius);
                         osMutexRelease(*Hw_Mutex);
                         break;
                     default:

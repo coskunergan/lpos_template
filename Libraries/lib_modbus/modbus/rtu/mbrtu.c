@@ -82,7 +82,7 @@ eMBErrorCode eMBRTUInit(uint8_t ucSlaveAddress, uint8_t ucPort, uint32_t ulBaudR
     ENTER_CRITICAL_SECTION();
 
     /* Modbus RTU uses 8 Databits. */
-    if(xMBPortSerialInit(ucPort, ulBaudRate, 8, eParity) != TRUE)
+    if(xMBPortSerialInit(ucPort, ulBaudRate, 8, eParity) != MB_TRUE)
     {
         eStatus = MB_EPORTERR;
     }
@@ -107,7 +107,7 @@ eMBErrorCode eMBRTUInit(uint8_t ucSlaveAddress, uint8_t ucPort, uint32_t ulBaudR
              */
             usTimerT35_50us = (7UL * 220000UL) / (2UL * ulBaudRate);
         }
-        if(xMBPortTimersInit((uint16_t) usTimerT35_50us, ulBaudRate) != TRUE)
+        if(xMBPortTimersInit((uint16_t) usTimerT35_50us, ulBaudRate) != MB_TRUE)
         {
             eStatus = MB_EPORTERR;
         }
@@ -126,7 +126,7 @@ void eMBRTUStart(void)
      * modbus protocol stack until the bus is free.
      */
     eRcvState = STATE_RX_INIT;
-    vMBPortSerialEnable(TRUE, FALSE);
+    vMBPortSerialEnable(MB_TRUE, MB_FALSE);
     //vMBPortTimersEnable();
 
     EXIT_CRITICAL_SECTION();
@@ -135,7 +135,7 @@ void eMBRTUStart(void)
 void eMBRTUStop(void)
 {
     ENTER_CRITICAL_SECTION();
-    vMBPortSerialEnable(FALSE, FALSE);
+    vMBPortSerialEnable(MB_FALSE, MB_FALSE);
     vMBPortTimersDisable();
     EXIT_CRITICAL_SECTION();
 }
@@ -201,7 +201,7 @@ eMBErrorCode eMBRTUSend(uint8_t ucSlaveAddress, const uint8_t *pucFrame, uint16_
 
         /* Activate the transmitter. */
         eSndState = STATE_TX_XMIT;
-        vMBPortSerialEnable(FALSE, TRUE);
+        vMBPortSerialEnable(MB_FALSE, MB_TRUE);
     }
     else
     {
@@ -213,7 +213,7 @@ eMBErrorCode eMBRTUSend(uint8_t ucSlaveAddress, const uint8_t *pucFrame, uint16_
 
 uint8_t xMBRTUReceiveFSM(void)
 {
-    uint8_t xTaskNeedSwitch = FALSE;
+    uint8_t xTaskNeedSwitch = MB_FALSE;
     uint8_t ucByte;
 
     assert(eSndState == STATE_TX_IDLE);
@@ -272,7 +272,7 @@ uint8_t xMBRTUReceiveFSM(void)
 
 uint8_t xMBRTUTransmitFSM(void)
 {
-    uint8_t xNeedPoll = FALSE;
+    uint8_t xNeedPoll = MB_FALSE;
 
     assert(eRcvState == STATE_RX_IDLE);
 
@@ -282,7 +282,7 @@ uint8_t xMBRTUTransmitFSM(void)
          * idle state.  */
         case STATE_TX_IDLE:
             /* enable receiver/disable transmitter. */
-            vMBPortSerialEnable(TRUE, FALSE);
+            vMBPortSerialEnable(MB_TRUE, MB_FALSE);
             break;
 
         case STATE_TX_XMIT:
@@ -298,7 +298,7 @@ uint8_t xMBRTUTransmitFSM(void)
                 xNeedPoll = xMBPortEventPost(EV_FRAME_SENT);
                 /* Disable transmitter. This prevents another transmit buffer
                  * empty interrupt. */
-                vMBPortSerialEnable(TRUE, FALSE);
+                vMBPortSerialEnable(MB_TRUE, MB_FALSE);
                 eSndState = STATE_TX_IDLE;
             }
             break;
@@ -309,7 +309,7 @@ uint8_t xMBRTUTransmitFSM(void)
 
 uint8_t xMBRTUTimerT35Expired(void)
 {
-    uint8_t xNeedPoll = FALSE;
+    uint8_t xNeedPoll = MB_FALSE;
 
     switch(eRcvState)
     {

@@ -16,10 +16,10 @@ extern "C" {
 #include "main.h"
 
 typedef struct
-{    
-		uint32_t ReferanceVoltageLevelmV;
-		int16_t TemperatureLevelCelsius;    
-		uint8_t CPULevelPercent;  		
+{
+    uint32_t ReferanceVoltageLevelmV;
+    int16_t TemperatureLevelCelsius;
+    uint8_t CPULevelPercent;
 } GlobalStats_t;
 
 #define LIB_LEDS

@@ -46,13 +46,13 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)	// fail interrupt
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle) 	// trasmit done interrupt
 {
     Modbus_Data_Frame_t msg;
-    uint8_t bTaskWoken = FALSE;
+    uint8_t bTaskWoken = MB_FALSE;
 
     if(UartHandle->Instance == MB_UART)
     {
         bTaskWoken = pxMBFrameCBTransmitterEmpty();
 
-        if(bTaskWoken == TRUE)
+        if(bTaskWoken == MB_TRUE)
         {
             msg.data = eMODBUS_TASKWOKEN;
 
@@ -64,7 +64,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle) 	// trasmit done in
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) // receive done interrupt
 {
     Modbus_Data_Frame_t msg;
-    uint8_t bTaskWoken = FALSE;
+    uint8_t bTaskWoken = MB_FALSE;
 
     if(UartHandle->Instance == MB_UART)
     {
@@ -72,7 +72,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) // receive done int
 
         HAL_UART_Receive_IT(UartHandle, &rx_byte, 1);
 
-        if(bTaskWoken == TRUE)
+        if(bTaskWoken == MB_TRUE)
         {
             msg.data = eMODBUS_TASKWOKEN;
             SendDataMsg_Modbus(&msg);
@@ -218,7 +218,7 @@ void Modbus_Hw_DeInit()
 /*********************************************************/
 void Modbus_Hw_Rx_State(uint8_t state)
 {
-    if(state == TRUE)
+    if(state == MB_TRUE)
     {
         HAL_GPIO_WritePin(MB_UART_EN_PORT, MB_UART_EN_PIN, GPIO_PIN_RESET);// RX mode on
         HAL_UART_Receive_IT(&UartHandle, &rx_byte, 1);
@@ -231,15 +231,15 @@ void Modbus_Hw_Rx_State(uint8_t state)
 /*********************************************************/
 void Modbus_Hw_Tx_State(uint8_t state)
 {
-    if(state == TRUE)
+    if(state == MB_TRUE)
     {
         HAL_GPIO_WritePin(MB_UART_EN_PORT, MB_UART_EN_PIN, GPIO_PIN_SET);// TX mode on
-        SleepAbortWhileTransmitAndReceive = TRUE;
+        SleepAbortWhileTransmitAndReceive = MB_TRUE;
         pxMBFrameCBTransmitterEmpty();
     }
     else
     {
-        SleepAbortWhileTransmitAndReceive = FALSE;
+        SleepAbortWhileTransmitAndReceive = MB_FALSE;
         HAL_UART_AbortTransmit_IT(&UartHandle);
     }
 }

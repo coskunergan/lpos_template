@@ -137,6 +137,7 @@ static void StartTask(void *argument)
                     case eVOLTAGE_REFRESH:
                         osMutexAcquire(*Hw_Mutex, osWaitForever);
                         GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
+                        DBG_PRINTF("Voltage: %d mV", GlobalStats.ReferanceVoltageLevelmV);
                         osMutexRelease(*Hw_Mutex);
                         break;
                     default:
