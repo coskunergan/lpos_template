@@ -130,7 +130,7 @@ int main(void)
     {
         .name = "IWDTTask",
         .priority = (osPriority_t) osPriorityLow,
-        .stack_size = 128
+        .stack_size = 256
     };
     IWDTTaskHandle = osThreadNew(StartIWDTTask, NULL, &IWDTTask_attributes);
 
@@ -368,13 +368,12 @@ static void MX_GPIO_Init(void)
 void StartIWDTTask(void *argument)
 {
     /* USER CODE BEGIN 5 */
-    //osSemaphoreId_t WDT_Sem = osSemaphoreNew(1,0,NULL);
+    osSemaphoreId_t WDT_Sem = osSemaphoreNew(1,0,NULL);
     /* Infinite loop */
     for(;;)
     {
         HAL_IWDG_Refresh(&hiwdg);
-        //osSemaphoreAcquire(WDT_Sem,500);
-        osDelay(500);
+        osSemaphoreAcquire(WDT_Sem,500);
         //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test	for nucleo
         //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_6);// test
     }
