@@ -33,7 +33,7 @@ static void Lib_Init(void)
     const osThreadAttr_t defaultTask_attributes =
     {
         .name = "TemperatureTask",
-        .priority = (osPriority_t) osPriorityNormal,
+        .priority = (osPriority_t) osPriorityBelowNormal,
         .stack_size = 384
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)

@@ -45,7 +45,7 @@ static void Lib_Init(void)
     const osThreadAttr_t defaultTask_attributes =
     {
         .name = "ModbusTask",
-        .priority = (osPriority_t) osPriorityNormal,
+        .priority = (osPriority_t) osPriorityRealtime,
         .stack_size = 512
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)

@@ -171,7 +171,11 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.LSIState = RCC_LSI_ON;
     RCC_OscInitStruct.MSIState = RCC_MSI_ON;
     RCC_OscInitStruct.MSICalibrationValue = 0;
-    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;//4MHz (14.5uA while run periodic 9 tasks.)
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_7;//8MHz
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_8;//16MHz  (15.0uA while run periodic 9 tasks.)
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_9;//24MHz
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_10;//32MHz (18.0uA while run periodic 9 tasks.)
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
     if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
@@ -368,12 +372,12 @@ static void MX_GPIO_Init(void)
 void StartIWDTTask(void *argument)
 {
     /* USER CODE BEGIN 5 */
-    osSemaphoreId_t WDT_Sem = osSemaphoreNew(1,0,NULL);
+    osSemaphoreId_t WDT_Sem = osSemaphoreNew(1, 0, NULL);
     /* Infinite loop */
     for(;;)
     {
         HAL_IWDG_Refresh(&hiwdg);
-        osSemaphoreAcquire(WDT_Sem,500);
+        osSemaphoreAcquire(WDT_Sem, 500);
         //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test	for nucleo
         //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_6);// test
     }

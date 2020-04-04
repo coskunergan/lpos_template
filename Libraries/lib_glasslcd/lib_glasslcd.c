@@ -32,7 +32,7 @@ static void Lib_Init(void)
     const osThreadAttr_t defaultTask_attributes =
     {
         .name = "GlassLcdTask",
-        .priority = (osPriority_t) osPriorityNormal,
+        .priority = (osPriority_t) osPriorityBelowNormal,
         .stack_size = 256
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)

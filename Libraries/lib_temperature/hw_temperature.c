@@ -125,7 +125,7 @@ int8_t Temperature_Read(void)
         /* configure adc channel */
         adcConf.Channel = ADC_CHANNEL_TEMPSENSOR;
         adcConf.Rank = ADC_REGULAR_RANK_1;
-        adcConf.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+        adcConf.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
         adcConf.SingleDiff = ADC_SINGLE_ENDED;
         adcConf.OffsetNumber = ADC_OFFSET_NONE;
         adcConf.Offset = 0;

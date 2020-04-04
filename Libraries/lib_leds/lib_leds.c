@@ -33,7 +33,7 @@ static void Lib_Init(void)
     const osThreadAttr_t defaultTask_attributes =
     {
         .name = "LedsTask",
-        .priority = (osPriority_t) osPriorityNormal,
+        .priority = (osPriority_t) osPriorityBelowNormal,
         .stack_size = 256
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
@@ -83,7 +83,6 @@ static void Button_Blink_ISR(Button_State_t state)
     }
     else if(state == eLONGPRESSED)
     {
-        DBG_PRINTF("Button Long Presed!");
         SendDataMsg_Led(eLED_ID_1, eLED_OFF);
         SendDataMsg_Led(eLED_ID_2, eLED_ON);
     }

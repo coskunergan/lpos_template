@@ -64,10 +64,10 @@ Revision: $Rev: 17066 $
 //
 // Constants for known core configuration
 //
-#define SEGGER_SYSVIEW_CORE_OTHER   0
-#define SEGGER_SYSVIEW_CORE_CM0     1 // Cortex-M0/M0+/M1
+//#define SEGGER_SYSVIEW_CORE_OTHER   0
+//#define SEGGER_SYSVIEW_CORE_CM0     1 // Cortex-M0/M0+/M1
 #define SEGGER_SYSVIEW_CORE_CM3     2 // Cortex-M3/M4/M7
-#define SEGGER_SYSVIEW_CORE_RX      3 // Renesas RX
+//#define SEGGER_SYSVIEW_CORE_RX      3 // Renesas RX
 
 #if (defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__) || (defined __clang__)
   #if (defined __ARM_ARCH_6M__) || (defined __ARM_ARCH_8M_BASE__)
@@ -122,7 +122,7 @@ Revision: $Rev: 17066 $
 *       SystemView buffer configuration
 */
 #ifndef   SEGGER_SYSVIEW_RTT_BUFFER_SIZE
-  #define SEGGER_SYSVIEW_RTT_BUFFER_SIZE        1024                            // Number of bytes that SystemView uses for the buffer.
+  #define SEGGER_SYSVIEW_RTT_BUFFER_SIZE        2048                            // Number of bytes that SystemView uses for the buffer.
 #endif
 
 #ifndef   SEGGER_SYSVIEW_RTT_CHANNEL
