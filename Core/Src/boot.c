@@ -32,7 +32,7 @@ static void BootTask(void *argument)
 {
     osSemaphoreId_t Boot_Sem = osSemaphoreNew(1, 0, NULL);
 
-    SEGGER_SYSVIEW_Start();
+    SEGGER_SYSVIEW_Start();		
 
     DBG_PRINTF("Boot started!");
 
@@ -81,10 +81,10 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 0,
-        .minute = 0,
-        .hour = 0,
-        .date = 01,  //2.day
-        .month = 02, //January
+        .minute = 58,
+        .hour = 16,
+        .date = 5,  //6.day
+        .month = 04, //April
         .year = 2020
     };
     SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);

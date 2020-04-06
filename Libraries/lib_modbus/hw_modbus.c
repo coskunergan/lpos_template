@@ -19,7 +19,7 @@
 
 #define WAKEUP_FROM_ADDRESS
 
-extern uint8_t SleepAbortWhileTransmitAndReceive;
+extern uint8_t SleepAbortWhileTransmit;
 
 static uint8_t rx_byte;
 static uint8_t tx_byte;
@@ -234,12 +234,12 @@ void Modbus_Hw_Tx_State(uint8_t state)
     if(state == MB_TRUE)
     {
         HAL_GPIO_WritePin(MB_UART_EN_PORT, MB_UART_EN_PIN, GPIO_PIN_SET);// TX mode on
-        SleepAbortWhileTransmitAndReceive = MB_TRUE;
+        SleepAbortWhileTransmit = MB_TRUE;
         pxMBFrameCBTransmitterEmpty();
     }
     else
     {
-        SleepAbortWhileTransmitAndReceive = MB_FALSE;
+        SleepAbortWhileTransmit = MB_FALSE;
         HAL_UART_AbortTransmit_IT(&UartHandle);
     }
 }

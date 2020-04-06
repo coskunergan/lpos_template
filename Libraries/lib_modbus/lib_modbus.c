@@ -23,7 +23,7 @@ static osMessageQueueId_t mq_id;
 
 static osTimerId_t MB_Timer_ID;
 static uint32_t MB_Timer_Period;
-uint8_t SleepAbortWhileTransmitAndReceive = MB_FALSE;
+uint8_t SleepAbortWhileTransmit = MB_FALSE;
 
 uint16_t   usRegInputStart = REG_INPUT_START;
 uint16_t   *usRegInputBuf[REG_INPUT_NREGS];
@@ -295,7 +295,7 @@ static void StartTask(void *argument)
 
     for(;;)
     {
-        if(osMessageQueueGet(mq_id, msg, NULL, (SleepAbortWhileTransmitAndReceive || vMBPortEventCount()) ? 0 : osWaitForever) == osOK)
+        if(osMessageQueueGet(mq_id, msg, NULL, (SleepAbortWhileTransmit || vMBPortEventCount()) ? 1 : osWaitForever) == osOK)
         {
             if(*msg == eMODBUS_CONFIG_FRAME)
             {
@@ -355,14 +355,12 @@ static void StartTask(void *argument)
                         {
                             Error_Handler();
                         }
-                        SleepAbortWhileTransmitAndReceive = MB_TRUE;
                         break;
                     case eMODBUS_TIMER_STOP:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerStop(MB_Timer_ID)))
                         {
                             Error_Handler();
                         }
-                        SleepAbortWhileTransmitAndReceive = MB_FALSE;
                         break;
                     case eMODBUS_TIMER_CLOSE:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerDelete(MB_Timer_ID)))
