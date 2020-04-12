@@ -39,14 +39,16 @@
 #if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 
 /*-----------------------------------------------------------*/
+/* The frequency at which TIMx will run. */
+#define lpCLOCK_INPUT_FREQUENCY 	( 32768UL )
 
 /* Calculate how many clock increments make up a single tick period. */
-static const uint32_t ulReloadValueForOneTick = ((32768UL / configTICK_RATE_HZ) + 1);
+static const uint32_t ulReloadValueForOneTick = ((lpCLOCK_INPUT_FREQUENCY / configTICK_RATE_HZ) - 1);
 
 /* Holds the maximum number of ticks that can be suppressed - which is
 basically how far into the future an interrupt can be generated. Set during
 initialisation. */
-static TickType_t xMaximumPossibleSuppressedTicks = ((unsigned long) 0xFFFF) / ulReloadValueForOneTick;
+static TickType_t xMaximumPossibleSuppressedTicks = ((unsigned long) USHRT_MAX) / ulReloadValueForOneTick;
 
 /* Flag set from the tick interrupt to allow the sleep processing to know if
 sleep mode was exited because of an tick interrupt or a different interrupt. */
@@ -79,6 +81,14 @@ void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
     }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 
+    __HAL_LPTIM_ENABLE(&hlptim1);
+    __HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)ulReloadValueForOneTick);
+////    while(!(__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_ARROK)))
+////    {
+////    }
+////    __HAL_LPTIM_CLEAR_FLAG(&hlptim1, LPTIM_FLAG_ARROK);
+//		HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);		
+
     /* The CPU woke because of a tick. */
     ulTickFlag = pdTRUE;
 }
@@ -91,164 +101,236 @@ the LPTIM1 interrupt, as the tick is generated from LPTIM1 compare matches event
 
 void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 {
-    TickType_t ulReloadValue, xModifiableIdleTime, ulCompleteTickPeriods;
-    uint32_t ulCounterValue, temp;
+    uint32_t ulCounterValue, ulCompleteTickPeriods, temp;
+    eSleepModeStatus eSleepAction;
+    TickType_t xModifiableIdleTime;
+    const TickType_t xRegulatorOffIdleTime = 30;
 
+    /* THIS FUNCTION IS CALLED WITH THE SCHEDULER SUSPENDED. */
+
+    /* Make sure the TIMx reload value does not overflow the counter. */
     if(xExpectedIdleTime > xMaximumPossibleSuppressedTicks)
     {
         xExpectedIdleTime = xMaximumPossibleSuppressedTicks;
     }
-    /*
-     * Calculate the reload value required to wait xExpectedIdleTime tick periods.
-     */
-    ulReloadValue = xExpectedIdleTime * ulReloadValueForOneTick;
-    /*
-     * TODO: Any compensation for the time the timer is stopped
-     */
-    /*
-     * Stop the timer momentarily
-     */
+
+    /* Calculate the reload value required to wait xExpectedIdleTime tick
+    periods. */
+    ulCounterValue = ulReloadValueForOneTick * xExpectedIdleTime;
+
+    /* Stop TIMx momentarily.  The time TIMx is stopped for is not accounted for
+    in this implementation (as it is in the generic implementation) because the
+    clock is so slow it is unlikely to be stopped for a complete count period
+    anyway. */
+    do
+    {
+        temp = HAL_LPTIM_ReadCounter(&hlptim1);
+    }
+    while(temp != HAL_LPTIM_ReadCounter(&hlptim1));
     HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
 
-    /*
-     * Enter a critical section but don’t use the taskENTER_CRITICAL()
-     * method as that will mask interrupts that should exit sleep mode.
-     */
-    __disable_irq();
-    __dsb(portSY_FULL_READ_WRITE);
-    __isb(portSY_FULL_READ_WRITE);
+    /* Enter a critical section but don't use the taskENTER_CRITICAL() method as
+    that will mask interrupts that should exit sleep mode. */
+    __asm volatile("cpsid i");
+    __asm volatile("dsb");
+    __asm volatile("isb");
 
-    /*
-     * tick flag is set to false before going to sleep
-     */
+    /* The tick flag is set to false before sleeping.  If it is true when sleep
+    mode is exited then sleep mode was probably exited because the tick was
+    suppressed for the entire xExpectedIdleTime period. */
     ulTickFlag = pdFALSE;
 
-    /*
-     * If a context switch is pending then abandon the low power entry as the
-     * context switch might have been pended by an external interrupt that requires
-     * processing.
-     */
-    eSleepModeStatus sleep_action = eTaskConfirmSleepModeStatus();
-    if(sleep_action == eAbortSleep)
+    /* If a context switch is pending then abandon the low power entry as
+    the context switch might have been pended by an external interrupt that
+    requires processing. */
+    eSleepAction = eTaskConfirmSleepModeStatus();
+    if(eSleepAction == eAbortSleep)
     {
-        /* Restart the tick
-        */
+        /* Restart tick. */
         HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
-        /* Re - enable the interrupts
-        */
-        __enable_irq();
+
+        /* Re-enable interrupts - see comments above the cpsid instruction()
+        above. */
+        __asm volatile("cpsie i");
     }
-    else if(sleep_action == eNoTasksWaitingTimeout)
+    else if(eSleepAction == eNoTasksWaitingTimeout)
     {
-        /*
-         * Let the application carry out pre-sleep processing
-         */
+        /* A user definable macro that allows application code to be inserted
+        	here.  Such application code can be used to minimise power consumption
+        	further by turning off IO, peripheral clocks, the Flash, etc. */
         configPRE_SLEEP_PROCESSING(&xModifiableIdleTime);
-        /*
-         * Sleep
-         */
+
+        /* There are no running state tasks and no tasks that are blocked with a
+        time out.  Assuming the application does not care if the tick time slips
+        with respect to calendar time then enter a deep sleep that can only be
+        woken by (in this demo case) the user button being pushed on the
+        STM32L discovery board.  If the application does require the tick time
+        to keep better track of the calender time then the RTC peripheral can be
+        used to make rough adjustments. */
         HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
-        /*
-         * Let the application carry out post-sleep processing
-         */
+
+        /* A user definable macro that allows application code to be inserted
+        here.  Such application code can be used to reverse any actions taken
+        by the configPRE_STOP_PROCESSING().  In this demo
+        configPOST_STOP_PROCESSING() is used to re-initialise the clocks that
+        were turned off when STOP mode was entered. */
         configPOST_SLEEP_PROCESSING(&xModifiableIdleTime);
-        /* Restart the tick
-        */
+
+        /* Restart tick. */
         HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
-        /* Re - enable the interrupts
-        */
-        __enable_irq();
+				
+        /* Re-enable interrupts - see comments above the cpsid instruction()
+        above. */
+        __asm volatile("cpsie i");
+        __asm volatile("dsb");
+        __asm volatile("isb");
+
     }
     else
     {
-        /*
-         * TODO: Need to update the tick count
-         */
-        /*
-         * Restart the tick
-         */
-        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValue);
+        /* Trap underflow before the next calculation. */
+        configASSERT(ulCounterValue >= temp);
+
+        /* Adjust the TIMx value to take into account that the current time
+        slice is already partially complete. */
+        ulCounterValue -= temp;
+
+        /* Trap overflow/underflow before the calculated value is written to
+        TIMx. */
+        configASSERT(ulCounterValue < (uint32_t) USHRT_MAX);
+        configASSERT(ulCounterValue != 0);
+
+        /* Update to use the calculated overflow value. */
+				/* Restart the TIMx. */
+        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulCounterValue, ulCounterValue);
+
+        /* Allow the application to define some pre-sleep processing.  This is
+        the standard configPRE_SLEEP_PROCESSING() macro as described on the
+        FreeRTOS.org website. */
         xModifiableIdleTime = xExpectedIdleTime;
-
-        /*
-         * Check for nullness of power_manager_instance before operating on it.
-         * This is necessary to assure that we're not triggering the sleep mode processing
-         * before the controller creates the power_manager instance.
-         */
-
-        /*
-         * Let the application carry out pre-sleep processing
-         */
         configPRE_SLEEP_PROCESSING(&xModifiableIdleTime);
-        /*
-         * Sleep
-         */
-        if(xModifiableIdleTime > (TickType_t)(0.03 * configTICK_RATE_HZ))
+
+        /* xExpectedIdleTime being set to 0 by configPRE_SLEEP_PROCESSING()
+        means the application defined code has already executed the wait/sleep
+        instruction. */
+        if(xModifiableIdleTime > 0)
         {
-            HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);	// Running if greater than 30ms.
+            /* The sleep mode used is dependent on the expected idle time
+            as the deeper the sleep the longer the wake up time.  See the
+            comments at the top of main_low_power.c.  Note xRegulatorOffIdleTime
+            is set purely for convenience of demonstration and is not intended
+            to be an optimised value. */
+            if(xModifiableIdleTime > xRegulatorOffIdleTime)
+            {
+                /* A slightly lower power sleep mode with a longer wake up
+                time. */
+                HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+            }
+            else
+            {
+                /* A slightly higher power sleep mode with a faster wake up
+                time. */
+                HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI);
+            }
         }
-        else if(xModifiableIdleTime > 0)
-        {
-            HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI);	// Running if between 1 of 29ms.
-        }
-        /*
-         * Let the application carry out post-sleep processing
-         */
+
+        /* Allow the application to define some post sleep processing.  This is
+        the standard configPOST_SLEEP_PROCESSING() macro, as described on the
+        FreeRTOS.org website. */
         configPOST_SLEEP_PROCESSING(&xModifiableIdleTime);
 
-        /* retrieve counter value from LPTIM */
+        /* Stop TIMx.  Again, the time the clock is stopped for in not accounted
+        for here (as it would normally be) because the clock is so slow it is
+        unlikely it will be stopped for a complete count period anyway. */
+        do
         {
-            /* multiple readings are done to get a reliable counter register reading as described in the datasheet */
-            do
-            {
-                temp = HAL_LPTIM_ReadCounter(&hlptim1);
-                ulCounterValue = HAL_LPTIM_ReadCounter(&hlptim1);
-            }
-            while(temp != ulCounterValue);
+            temp = HAL_LPTIM_ReadCounter(&hlptim1);
         }
-
-        /*
-         * Stop low power timer.
-         * The time the clock is stopped for is not accounted here, since
-         * the clock is so slow. It is quite unlikely it is stopped for a complete count period.
-         */
+        while(temp != HAL_LPTIM_ReadCounter(&hlptim1));
         HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
 
-        /*
-         * Re-enable interrupts.
-         */
-        __enable_irq();
-        __dsb(portSY_FULL_READ_WRITE);
-        __isb(portSY_FULL_READ_WRITE);
+        /* Re-enable interrupts - see comments above the cpsid instruction()
+        above. */
+        __asm volatile("cpsie i");
+        __asm volatile("dsb");
+        __asm volatile("isb");
 
         if(ulTickFlag != pdFALSE)
         {
-            /*
-             * Tick interrupt ended the sleep.
-             */
+            /* Trap overflows before the next calculation. */
+            configASSERT(ulReloadValueForOneTick >= temp);
+
+            /* The tick interrupt has already executed, although because this
+            function is called with the scheduler suspended the actual tick
+            processing will not occur until after this function has exited.
+            Reset the reload value with whatever remains of this tick period. */
+            ulCounterValue = ulReloadValueForOneTick - temp;
+
+            /* Trap under/overflows before the calculated value is used. */
+            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
+            configASSERT(ulCounterValue != 0);
+
+            /* Use the calculated reload value. */
+            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulCounterValue,ulCounterValue);
+
+
+            /* The tick interrupt handler will already have pended the tick
+            processing in the kernel.  As the pending tick will be processed as
+            soon as this function exits, the tick value	maintained by the tick
+            is stepped forward by one less than the	time spent sleeping.  The
+            actual stepping of the tick appears later in this function. */
             ulCompleteTickPeriods = xExpectedIdleTime - 1UL;
-            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
         }
         else
         {
-            /*
-             * Something other than the tick interrupt ended the sleep.
-             */
-            ulCompleteTickPeriods = ulCounterValue / ulReloadValueForOneTick;
-            ulCounterValue %= ulReloadValueForOneTick;
+            /* Something other than the tick interrupt ended the sleep.  How
+            many complete tick periods passed while the processor was
+            sleeping? */
+            ulCompleteTickPeriods = temp / ulReloadValueForOneTick;
+
+            /* Check for over/under flows before the following calculation. */
+            configASSERT(temp >= (ulCompleteTickPeriods * ulReloadValueForOneTick));
+
+            /* The reload value is set to whatever fraction of a single tick
+            period remains. */
+            ulCounterValue = temp - (ulCompleteTickPeriods * ulReloadValueForOneTick);
+					
+            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
+					
             if(ulCounterValue == 0)
             {
+                /* There is no fraction remaining. */
                 ulCounterValue = ulReloadValueForOneTick;
-                ++ulCompleteTickPeriods;
+                ulCompleteTickPeriods++;
             }
-            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulCounterValue);
+            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick,ulCounterValue);
         }
+        /* Restart TIMx so it runs up to the reload value.  The reload value
+        will get set to the value required to generate exactly one tick period
+        the next time the TIMx interrupt executes. */
 
-        /*
-         * Wind the tick forward by the number of tick periods that the MCU remained in a low power state.
-         */
+        /* Wind the tick forward by the number of tick periods that the CPU
+        remained in a low power state. */
         vTaskStepTick(ulCompleteTickPeriods);
     }
 }
 #endif
+
+// HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
+
+//else
+//{
+//    /*
+//     * Something other than the tick interrupt ended the sleep.
+//     */
+//    ulCompleteTickPeriods = ulCounterValue / ulReloadValueForOneTick;
+//    //ulCounterValue %= ulReloadValueForOneTick;
+//    ulCounterValue -=  ulCompleteTickPeriods * ulReloadValueForOneTick;
+//    if(ulCounterValue == 0)
+//    {
+//        ulCounterValue = ulReloadValueForOneTick;
+//        ++ulCompleteTickPeriods;
+//    }
+//    HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulCounterValue);
+//}
 
