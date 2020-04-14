@@ -377,7 +377,7 @@ void StartIWDTTask(void *argument)
     for(;;)
     {
         HAL_IWDG_Refresh(&hiwdg);
-        osSemaphoreAcquire(WDT_Sem, 100);
+        osSemaphoreAcquire(WDT_Sem, 500);
         //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);// test	for nucleo
         //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_6);// test
     }

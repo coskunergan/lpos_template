@@ -32,7 +32,7 @@ static void BootTask(void *argument)
 {
     osSemaphoreId_t Boot_Sem = osSemaphoreNew(1, 0, NULL);
 
-    SEGGER_SYSVIEW_Start();		
+    SEGGER_SYSVIEW_Start();
 
     DBG_PRINTF("Boot started!");
 
@@ -81,8 +81,8 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 0,
-        .minute = 56,
-        .hour = 22,
+        .minute = 34,
+        .hour = 11,
         .date = 5,  //6.day
         .month = 04, //April
         .year = 2020

@@ -64,6 +64,12 @@ tick. */
 
 void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 {
+    /* The CPU woke because of a tick. */
+    ulTickFlag = pdTRUE;
+
+    __HAL_LPTIM_COMPARE_SET(&hlptim1, (uint16_t)ulReloadValueForOneTick);
+    __HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)ulReloadValueForOneTick);
+
     /* The next block of code is from the standard FreeRTOS tick interrupt
     handler.  The standard handler is not called directly in case future
     versions contain changes that make it no longer suitable for calling
@@ -80,17 +86,6 @@ void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
         possible interrupt priority. */
     }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
-
-    __HAL_LPTIM_ENABLE(&hlptim1);
-    __HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)ulReloadValueForOneTick);
-////    while(!(__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_ARROK)))
-////    {
-////    }
-////    __HAL_LPTIM_CLEAR_FLAG(&hlptim1, LPTIM_FLAG_ARROK);
-//		HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);		
-
-    /* The CPU woke because of a tick. */
-    ulTickFlag = pdTRUE;
 }
 
 /*-----------------------------------------------------------*/
@@ -101,10 +96,9 @@ the LPTIM1 interrupt, as the tick is generated from LPTIM1 compare matches event
 
 void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 {
-    uint32_t ulCounterValue, ulCompleteTickPeriods, temp;
+    uint32_t ulReloadValue, ulCompleteTickPeriods, ulCountBeforeSleep, ulCountAfterSleep, Compare_Value ;
     eSleepModeStatus eSleepAction;
     TickType_t xModifiableIdleTime;
-    const TickType_t xRegulatorOffIdleTime = 30;
 
     /* THIS FUNCTION IS CALLED WITH THE SCHEDULER SUSPENDED. */
 
@@ -116,7 +110,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
     /* Calculate the reload value required to wait xExpectedIdleTime tick
     periods. */
-    ulCounterValue = ulReloadValueForOneTick * xExpectedIdleTime;
+    ulReloadValue = ulReloadValueForOneTick * xExpectedIdleTime;
 
     /* Stop TIMx momentarily.  The time TIMx is stopped for is not accounted for
     in this implementation (as it is in the generic implementation) because the
@@ -124,10 +118,17 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
     anyway. */
     do
     {
-        temp = HAL_LPTIM_ReadCounter(&hlptim1);
+        ulCountBeforeSleep = HAL_LPTIM_ReadCounter(&hlptim1);
     }
-    while(temp != HAL_LPTIM_ReadCounter(&hlptim1));
+    while(ulCountBeforeSleep != HAL_LPTIM_ReadCounter(&hlptim1));
+    Compare_Value = hlptim1.Instance->CMP;
     HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
+
+    /* If this function is re-entered before one complete tick period then the
+    reload value might be set to take into account a partial time slice, but
+    just reading the count assumes it is counting up to a full ticks worth - so
+    add in the difference if any. */
+    ulCountBeforeSleep += (ulReloadValueForOneTick - Compare_Value);
 
     /* Enter a critical section but don't use the taskENTER_CRITICAL() method as
     that will mask interrupts that should exit sleep mode. */
@@ -147,7 +148,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
     if(eSleepAction == eAbortSleep)
     {
         /* Restart tick. */
-        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
+        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, (ulReloadValueForOneTick - ulCountBeforeSleep), (ulReloadValueForOneTick - ulCountBeforeSleep));
 
         /* Re-enable interrupts - see comments above the cpsid instruction()
         above. */
@@ -178,7 +179,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
         /* Restart tick. */
         HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
-				
+
         /* Re-enable interrupts - see comments above the cpsid instruction()
         above. */
         __asm volatile("cpsie i");
@@ -188,21 +189,10 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
     }
     else
     {
-        /* Trap underflow before the next calculation. */
-        configASSERT(ulCounterValue >= temp);
-
-        /* Adjust the TIMx value to take into account that the current time
+        /* Adjust the reload value to take into account that the current time
         slice is already partially complete. */
-        ulCounterValue -= temp;
-
-        /* Trap overflow/underflow before the calculated value is written to
-        TIMx. */
-        configASSERT(ulCounterValue < (uint32_t) USHRT_MAX);
-        configASSERT(ulCounterValue != 0);
-
-        /* Update to use the calculated overflow value. */
-				/* Restart the TIMx. */
-        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulCounterValue, ulCounterValue);
+        ulReloadValue -= ulCountBeforeSleep;
+        HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValue, ulReloadValue);
 
         /* Allow the application to define some pre-sleep processing.  This is
         the standard configPRE_SLEEP_PROCESSING() macro as described on the
@@ -220,17 +210,20 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
             comments at the top of main_low_power.c.  Note xRegulatorOffIdleTime
             is set purely for convenience of demonstration and is not intended
             to be an optimised value. */
-            if(xModifiableIdleTime > xRegulatorOffIdleTime)
+            if(xModifiableIdleTime > (0.03 * configTICK_RATE_HZ)) // Running if greater than 30ms.
             {
                 /* A slightly lower power sleep mode with a longer wake up
                 time. */
-                HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+                //HAL_PWREx_EnterSTOP0Mode(PWR_SLEEPENTRY_WFI);// 140uA idle current
+                //HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI); // 32uA idle current
+                HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI); // 6.7uA idle current
             }
             else
             {
+
                 /* A slightly higher power sleep mode with a faster wake up
                 time. */
-                HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI);
+                HAL_PWREx_EnterSTOP0Mode(PWR_STOPENTRY_WFI);
             }
         }
 
@@ -244,9 +237,9 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         unlikely it will be stopped for a complete count period anyway. */
         do
         {
-            temp = HAL_LPTIM_ReadCounter(&hlptim1);
+            ulCountAfterSleep = HAL_LPTIM_ReadCounter(&hlptim1);
         }
-        while(temp != HAL_LPTIM_ReadCounter(&hlptim1));
+        while(ulCountAfterSleep != HAL_LPTIM_ReadCounter(&hlptim1));
         HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
 
         /* Re-enable interrupts - see comments above the cpsid instruction()
@@ -257,22 +250,13 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
         if(ulTickFlag != pdFALSE)
         {
-            /* Trap overflows before the next calculation. */
-            configASSERT(ulReloadValueForOneTick >= temp);
-
             /* The tick interrupt has already executed, although because this
             function is called with the scheduler suspended the actual tick
             processing will not occur until after this function has exited.
             Reset the reload value with whatever remains of this tick period. */
-            ulCounterValue = ulReloadValueForOneTick - temp;
+            ulReloadValue = ulReloadValueForOneTick - ulCountAfterSleep;
 
-            /* Trap under/overflows before the calculated value is used. */
-            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
-            configASSERT(ulCounterValue != 0);
-
-            /* Use the calculated reload value. */
-            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulCounterValue,ulCounterValue);
-
+            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValue, ulReloadValue);
 
             /* The tick interrupt handler will already have pended the tick
             processing in the kernel.  As the pending tick will be processed as
@@ -284,26 +268,25 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         else
         {
             /* Something other than the tick interrupt ended the sleep.  How
-            many complete tick periods passed while the processor was
-            sleeping? */
-            ulCompleteTickPeriods = temp / ulReloadValueForOneTick;
-
-            /* Check for over/under flows before the following calculation. */
-            configASSERT(temp >= (ulCompleteTickPeriods * ulReloadValueForOneTick));
+            	many complete tick periods passed while the processor was
+            	sleeping?  Add back in the adjustment that was made to the reload
+            	value to account for the fact that a time slice was part way through
+            	when this function was called. */
+            ulCountAfterSleep += ulCountBeforeSleep;
+            ulCompleteTickPeriods = ulCountAfterSleep / ulReloadValueForOneTick;
 
             /* The reload value is set to whatever fraction of a single tick
             period remains. */
-            ulCounterValue = temp - (ulCompleteTickPeriods * ulReloadValueForOneTick);
-					
-            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
-					
-            if(ulCounterValue == 0)
+            ulCountAfterSleep -= (ulCompleteTickPeriods * ulReloadValueForOneTick);
+            ulReloadValue = ulReloadValueForOneTick - ulCountAfterSleep;
+
+            if(ulReloadValue == 0)
             {
                 /* There is no fraction remaining. */
-                ulCounterValue = ulReloadValueForOneTick;
+                ulReloadValue = ulReloadValueForOneTick;
                 ulCompleteTickPeriods++;
             }
-            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick,ulCounterValue);
+            HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValue, ulReloadValue);
         }
         /* Restart TIMx so it runs up to the reload value.  The reload value
         will get set to the value required to generate exactly one tick period
@@ -316,21 +299,5 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 }
 #endif
 
-// HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulReloadValueForOneTick);
 
-//else
-//{
-//    /*
-//     * Something other than the tick interrupt ended the sleep.
-//     */
-//    ulCompleteTickPeriods = ulCounterValue / ulReloadValueForOneTick;
-//    //ulCounterValue %= ulReloadValueForOneTick;
-//    ulCounterValue -=  ulCompleteTickPeriods * ulReloadValueForOneTick;
-//    if(ulCounterValue == 0)
-//    {
-//        ulCounterValue = ulReloadValueForOneTick;
-//        ++ulCompleteTickPeriods;
-//    }
-//    HAL_LPTIM_TimeOut_Start_IT(&hlptim1, ulReloadValueForOneTick, ulCounterValue);
-//}
 
