@@ -240,7 +240,23 @@ static void MX_LPTIM1_Init(void)
         Error_Handler();
     }
     /* USER CODE BEGIN LPTIM1_Init 2 */
+    /* Enable EXTI Line interrupt on the LPTIM Wake-up Timer */
+    __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_IT();
 
+    /* Set TIMOUT bit to enable the timeout function */
+    hlptim1.Instance->CFGR |= LPTIM_CFGR_TIMOUT;
+
+    /* Enable Compare match interrupt */
+    __HAL_LPTIM_ENABLE_IT(&hlptim1, LPTIM_IT_ARRM);
+
+    /* Enable the Peripheral */
+    __HAL_LPTIM_ENABLE(&hlptim1);
+
+    /* Load the period value in the autoreload register */
+    __HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)0);
+
+    /* Start timer in continuous mode */
+    __HAL_LPTIM_START_CONTINUOUS(&hlptim1);
     /* USER CODE END LPTIM1_Init 2 */
 
 }
