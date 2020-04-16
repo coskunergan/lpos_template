@@ -81,8 +81,8 @@ static void BootTask(void *argument)
     struct calendar_date date =
     {
         .second = 0,
-        .minute = 7,
-        .hour = 15,
+        .minute = 8,
+        .hour = 16,
         .date = 5,  //6.day
         .month = 04, //April
         .year = 2020

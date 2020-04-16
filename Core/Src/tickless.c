@@ -107,18 +107,17 @@ void LPTIM1_IRQHandler(void)
 /*-----------------------------------------------------------*/
 
 /* Override the default definition of vPortSuppressTicksAndSleep() that is
-weakly defined in the FreeRTOS Cortex-M4 port layer with a version that manages
-the LPTIM1 interrupt, as the tick is generated from LPTIM1 compare matches events. */
-
+weakly defined in the FreeRTOS Cortex-M3 port layer with a version that manages
+the TIM2 interrupt, as the tick is generated from TIM2 compare matches events. */
 void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 {
-    uint32_t ulReloadValue, ulCompleteTickPeriods, ulCountBeforeSleep, ulCountAfterSleep, Period_Value ;
+    uint32_t ulCounterValue, ulCompleteTickPeriods, ulCountBeforeSleep, ulCountAfterSleep, ulPeriodValue;
     eSleepModeStatus eSleepAction;
     TickType_t xModifiableIdleTime;
 
     /* THIS FUNCTION IS CALLED WITH THE SCHEDULER SUSPENDED. */
 
-    /* Make sure the TIMx reload value does not overflow the counter. */
+    /* Make sure the TIM2 reload value does not overflow the counter. */
     if(xExpectedIdleTime > xMaximumPossibleSuppressedTicks)
     {
         xExpectedIdleTime = xMaximumPossibleSuppressedTicks;
@@ -126,9 +125,9 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
     /* Calculate the reload value required to wait xExpectedIdleTime tick
     periods. */
-    ulReloadValue = ulReloadValueForOneTick * xExpectedIdleTime;
+    ulCounterValue = ulReloadValueForOneTick * xExpectedIdleTime;
 
-    /* Stop TIMx momentarily.  The time TIMx is stopped for is not accounted for
+    /* Stop TIM2 momentarily.  The time TIM2 is stopped for is not accounted for
     in this implementation (as it is in the generic implementation) because the
     clock is so slow it is unlikely to be stopped for a complete count period
     anyway. */
@@ -137,14 +136,9 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         ulCountBeforeSleep = LP_TICK_TIMER_COUNTER_REGISTER;
     }
     while(ulCountBeforeSleep != LP_TICK_TIMER_COUNTER_REGISTER);
-    Period_Value = LP_TICK_TIMER_PRELOAD_REGISTER;
+    ulPeriodValue = LP_TICK_TIMER_PRELOAD_REGISTER;
+    //TIM_Cmd(TIM2, DISABLE);
     LP_TICK_TIMER_STOP;
-
-    /* If this function is re-entered before one complete tick period then the
-    reload value might be set to take into account a partial time slice, but
-    just reading the count assumes it is counting up to a full ticks worth - so
-    add in the difference if any. */
-    ulCountBeforeSleep += (ulReloadValueForOneTick - Period_Value);
 
     /* Enter a critical section but don't use the taskENTER_CRITICAL() method as
     that will mask interrupts that should exit sleep mode. */
@@ -164,7 +158,8 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
     if(eSleepAction == eAbortSleep)
     {
         /* Restart tick. */
-        LP_TICK_TIMER_START(ulReloadValueForOneTick - ulCountBeforeSleep);
+        //TIM_Cmd(TIM2, ENABLE);
+        LP_TICK_TIMER_START(ulPeriodValue - ulCountBeforeSleep);
 
         /* Re-enable interrupts - see comments above the cpsid instruction()
         above. */
@@ -173,8 +168,8 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
     else if(eSleepAction == eNoTasksWaitingTimeout)
     {
         /* A user definable macro that allows application code to be inserted
-        	here.  Such application code can be used to minimise power consumption
-        	further by turning off IO, peripheral clocks, the Flash, etc. */
+          	here.  Such application code can be used to minimise power consumption
+          	further by turning off IO, peripheral clocks, the Flash, etc. */
         configPRE_SLEEP_PROCESSING(&xModifiableIdleTime);
 
         /* There are no running state tasks and no tasks that are blocked with a
@@ -194,6 +189,8 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         configPOST_SLEEP_PROCESSING(&xModifiableIdleTime);
 
         /* Restart tick. */
+        //TIM_SetCounter(TIM2, 0);
+        //TIM_Cmd(TIM2, ENABLE);
         LP_TICK_TIMER_START(ulReloadValueForOneTick);
 
         /* Re-enable interrupts - see comments above the cpsid instruction()
@@ -201,16 +198,28 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         __asm volatile("cpsie i");
         __asm volatile("dsb");
         __asm volatile("isb");
-
     }
     else
     {
-        /* Adjust the reload value to take into account that the current time
-        slice is already partially complete. */
-        ulReloadValue -= ulCountBeforeSleep;
+        /* Trap underflow before the next calculation. */
+        configASSERT(ulCounterValue >= ulCountBeforeSleep);
 
-        /* Restart tick. */
-        LP_TICK_TIMER_START(ulReloadValue);
+        /* Adjust the TIM2 value to take into account that the current time
+        slice is already partially complete. */
+        ulCounterValue -= (uint32_t) ulCountBeforeSleep;
+
+        /* Trap overflow/underflow before the calculated value is written to
+        TIM2. */
+        configASSERT(ulCounterValue < (uint32_t) USHRT_MAX);
+        configASSERT(ulCounterValue != 0);
+
+        /* Update to use the calculated overflow value. */
+        //TIM_SetAutoreload(TIM2, (uint16_t) ulCounterValue);
+        //TIM_SetCounter(TIM2, 0);
+
+        /* Restart the TIM2. */
+        //TIM_Cmd(TIM2, ENABLE);
+        LP_TICK_TIMER_START(ulCounterValue);
 
         /* Allow the application to define some pre-sleep processing.  This is
         the standard configPRE_SLEEP_PROCESSING() macro as described on the
@@ -250,7 +259,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         FreeRTOS.org website. */
         configPOST_SLEEP_PROCESSING(&xModifiableIdleTime);
 
-        /* Stop TIMx.  Again, the time the clock is stopped for in not accounted
+        /* Stop TIM2.  Again, the time the clock is stopped for in not accounted
         for here (as it would normally be) because the clock is so slow it is
         unlikely it will be stopped for a complete count period anyway. */
         do
@@ -258,6 +267,7 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
             ulCountAfterSleep = LP_TICK_TIMER_COUNTER_REGISTER;
         }
         while(ulCountAfterSleep != LP_TICK_TIMER_COUNTER_REGISTER);
+        //TIM_Cmd(TIM2, DISABLE);
         LP_TICK_TIMER_STOP;
 
         /* Re-enable interrupts - see comments above the cpsid instruction()
@@ -268,13 +278,23 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
         if(ulTickFlag != pdFALSE)
         {
+            /* Trap overflows before the next calculation. */
+            configASSERT(ulReloadValueForOneTick >= (uint32_t) ulCountAfterSleep);
+
             /* The tick interrupt has already executed, although because this
             function is called with the scheduler suspended the actual tick
             processing will not occur until after this function has exited.
             Reset the reload value with whatever remains of this tick period. */
-            ulReloadValue = ulReloadValueForOneTick - ulCountAfterSleep;
+            ulCounterValue = ulReloadValueForOneTick - (uint32_t) ulCountAfterSleep;
 
-            LP_TICK_TIMER_START(ulReloadValue);
+            /* Trap under/overflows before the calculated value is used. */
+            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
+            configASSERT(ulCounterValue != 0);
+
+            /* Use the calculated reload value. */
+            //TIM_SetAutoreload(TIM2, (uint16_t) ulCounterValue);
+            //TIM_SetCounter(TIM2, 0);
+            LP_TICK_TIMER_START(ulCounterValue);
 
             /* The tick interrupt handler will already have pended the tick
             processing in the kernel.  As the pending tick will be processed as
@@ -286,30 +306,32 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
         else
         {
             /* Something other than the tick interrupt ended the sleep.  How
-            	many complete tick periods passed while the processor was
-            	sleeping?  Add back in the adjustment that was made to the reload
-            	value to account for the fact that a time slice was part way through
-            	when this function was called. */
-            ulCountAfterSleep += ulCountBeforeSleep;
-            ulCompleteTickPeriods = ulCountAfterSleep / ulReloadValueForOneTick;
+            many complete tick periods passed while the processor was
+            sleeping? */
+            ulCompleteTickPeriods = ((uint32_t)ulCountAfterSleep) / ulReloadValueForOneTick;
+
+            /* Check for over/under flows before the following calculation. */
+            configASSERT(((uint32_t) ulCountAfterSleep) >= (ulCompleteTickPeriods * ulReloadValueForOneTick));
 
             /* The reload value is set to whatever fraction of a single tick
             period remains. */
-            ulCountAfterSleep -= (ulCompleteTickPeriods * ulReloadValueForOneTick);
-            ulReloadValue = ulReloadValueForOneTick - ulCountAfterSleep;
-
-            if(ulReloadValue == 0)
+            ulCounterValue = ((uint32_t) ulCountAfterSleep) - (ulCompleteTickPeriods * ulReloadValueForOneTick);
+            configASSERT(ulCounterValue <= (uint32_t) USHRT_MAX);
+            if(ulCounterValue == 0)
             {
                 /* There is no fraction remaining. */
-                ulReloadValue = ulReloadValueForOneTick;
+                ulCounterValue = ulReloadValueForOneTick;
                 ulCompleteTickPeriods++;
             }
-            /* Restart tick. */
-            LP_TICK_TIMER_START(ulReloadValue);
+            //TIM_SetAutoreload(TIM2, (uint16_t) ulCounterValue);
+            //TIM_SetCounter(TIM2, 0);
+            LP_TICK_TIMER_START(ulCounterValue);
         }
-        /* Restart TIMx so it runs up to the reload value.  The reload value
+
+        /* Restart TIM2 so it runs up to the reload value.  The reload value
         will get set to the value required to generate exactly one tick period
-        the next time the TIMx interrupt executes. */
+        the next time the TIM2 interrupt executes. */
+        //TIM_Cmd(TIM2, ENABLE);
 
         /* Wind the tick forward by the number of tick periods that the CPU
         remained in a low power state. */
