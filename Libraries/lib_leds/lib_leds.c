@@ -15,14 +15,14 @@ FIRST_START_OS(Lib_Init);
 
 static osMessageQueueId_t mq_id;
 
-static uint16_t leds_state;
+uint16_t leds_state;
 
 static void StartTask(void *argument);
 
 extern void Leds_Hw_Init(Led_ID_t led_id);
 extern void Leds_Hw_DeInit(Led_ID_t led_id);
 extern void Led_Operation(Led_Data_Frame_t *data_msg);
-
+extern void Func_Leds(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -72,53 +72,13 @@ osStatus_t SendConfigMsg_Led(Led_Config_t config, Led_ID_t led_id)
     return osErrorNoMemory;
 }
 /*********************************************************/
-#ifdef LIB_BUTTONS
-#include "..\lib_buttons\lib_buttons.h"
-//#include "..\..\Libraries\lib_buttons\lib_buttons.h"
-static void Button_Blink_ISR(Button_State_t state)
-{
-    if(state == ePRESSED)
-    {
-        SendDataMsg_Led(eLED_ID_1, eLED_ON);
-    }
-    else if(state == eLONGPRESSED)
-    {
-        SendDataMsg_Led(eLED_ID_1, eLED_OFF);
-        SendDataMsg_Led(eLED_ID_2, eLED_ON);
-    }
-    else
-    {
-        SendDataMsg_Led(eLED_ID_1, eLED_OFF);
-        SendDataMsg_Led(eLED_ID_2, eLED_OFF);
-    }
-}
-static void Button_Procces(void)
-{
-    SendConfigMsg_Buttons(eBUTTON_ADD_CALLBACK, eBUTTON_ID_1, Button_Blink_ISR);
-}
-#else
-__weak void Button_Procces(void);
-#endif
-/*********************************************************/
 static void StartTask(void *argument)
 {
     Led_Data_Frame_t *data_msg;
     Led_Config_Frame_t *config_msg;
     uint8_t msg[LED_MSGQUEUE_OBJECT_SIZE];
 
-    Button_Procces();
-
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Data_Frame_t modbus_msg =
-    {
-        .data = eMODBUS_ADD_RO_REG,
-        .ptr = &leds_state,
-        .length = 1,
-        .addres = 1001,
-    };
-    SendDataMsg_Modbus(&modbus_msg);
-#endif
+    Func_Leds();
 
     for(;;)
     {

@@ -20,7 +20,7 @@ static void StartTask(void *argument);
 extern void Buzzer_Hw_Init(void);
 extern void Buzzer_Hw_DeInit(void);
 extern void Buzzer_Operation(Buzzer_State_t state);
-
+extern void Func_Buzzer(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -69,40 +69,14 @@ osStatus_t SendConfigMsg_Buzzer(Buzzer_Config_t config)
     return osErrorNoMemory;
 }
 /*********************************************************/
-#ifdef LIB_BUTTONS
-#include "..\lib_buttons\lib_buttons.h"
-//#include "..\..\Libraries\lib_buttons\lib_buttons.h"
-static void Button_Blink_ISR(Button_State_t state)
-{
-    if(state == ePRESSED)
-    {
-        SendDataMsg_Buzzer(BUZZER_TONE_A, BUZZER_SHORT_BEEP);
-    }
-
-    if(state == eLONGPRESSED)
-    {
-        SendDataMsg_Buzzer(BUZZER_TONE_A, BUZZER_SHORT_BEEP);
-        SendDataMsg_Buzzer(BUZZER_TONE_NONE, BUZZER_SHORT_BEEP);
-        SendDataMsg_Buzzer(BUZZER_TONE_A, BUZZER_SHORT_BEEP);
-    }
-}
-/*********************************************************/
-static void Button_Procces(void)
-{
-    SendConfigMsg_Buttons(eBUTTON_ADD_CALLBACK, eBUTTON_ID_1, Button_Blink_ISR);
-}
-#else
-__weak void Button_Procces(void);
-#endif
-/*********************************************************/
 static void StartTask(void *argument)
 {
     Buzzer_Data_Frame_t *data_msg;
     Buzzer_Config_Frame_t *config_msg;
     uint8_t msg[BUZZER_MSGQUEUE_OBJECT_SIZE];
-		osSemaphoreId_t Buzzer_Sem = osSemaphoreNew(1,0,NULL);
-	
-    Button_Procces();
+    osSemaphoreId_t Buzzer_Sem = osSemaphoreNew(1, 0, NULL);
+
+    Func_Buzzer();
 
     for(;;)
     {
@@ -131,13 +105,13 @@ static void StartTask(void *argument)
                     Buzzer_Operation(eBUZZER_ON);
                     DBG_PRINTF("Buzzer Beep %d ms", data_msg->active_time);
 
-										osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time);			
+                    osSemaphoreAcquire(Buzzer_Sem, data_msg->active_time);
                     Buzzer_Operation(eBUZZER_OFF);
                 }
                 else if(data_msg->tone == 255)// buzzer ignore tone
                 {
                     Buzzer_Operation(eBUZZER_OFF);
-										osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time);	// buzzer ignore tone	
+                    osSemaphoreAcquire(Buzzer_Sem, data_msg->active_time);	// buzzer ignore tone
                 }
                 else
                 {
@@ -145,7 +119,7 @@ static void StartTask(void *argument)
                     for(int i = 0; i < data_msg->tone; i++)// buzzer frequence tone
                     {
                         Buzzer_Operation(eBUZZER_TOGGLE);
-												osSemaphoreAcquire(Buzzer_Sem,data_msg->active_time / data_msg->tone);		
+                        osSemaphoreAcquire(Buzzer_Sem, data_msg->active_time / data_msg->tone);
                     }
                     Buzzer_Operation(eBUZZER_OFF);
                 }

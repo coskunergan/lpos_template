@@ -21,6 +21,9 @@ FIRST_START_OS(Lib_Init);
 
 static osMessageQueueId_t mq_id;
 
+uint8_t ucSlaveID[16] = {0};
+uint8_t ucModelNo = 0x10;
+
 static osTimerId_t MB_Timer_ID;
 static uint32_t MB_Timer_Period;
 uint8_t SleepAbortWhileTransmit = MB_FALSE;
@@ -31,10 +34,12 @@ uint16_t   usRegHoldingStart = REG_HOLDING_START;
 uint16_t   *usRegHoldingBuf[REG_HOLDING_NREGS];
 
 extern void Modbus_Hw_DeInit(void);
+extern void Func_Modbus(void);
 static void StartTask(void *argument);
 
 osThreadId_t modbus_task;
 
+extern uint16_t test;
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -286,12 +291,7 @@ static void StartTask(void *argument)
     Modbus_Config_Frame_t *config_msg;
     uint8_t msg[MODBUS_MSGQUEUE_OBJECT_SIZE];
 
-    uint16_t test = 0;
-
-    const uint8_t ucSlaveID[] = { "Coskun ERGAN" };
-    const uint8_t ucModelNo = 0x10;
-
-    usRegInputBuf[0] = &test;
+    Func_Modbus();
 
     for(;;)
     {

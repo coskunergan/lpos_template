@@ -55,6 +55,7 @@ extern void Calendar_Hw_Init(void);
 extern void Calendar_Hw_DeInit(void);
 extern void Calendar_Enable(void);
 extern void Calendar_Disable(void);
+extern void Func_Calendar(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -602,17 +603,7 @@ static void StartTask(void *argument)
     uint8_t msg[CALENDAR_MSGQUEUE_OBJECT_SIZE];
     uint8_t i;
 
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Data_Frame_t modbus_msg =
-    {
-        .data = eMODBUS_ADD_RW_REG,
-        .ptr = (void *) &date.second,
-        .length = 4, // 8 byte
-        .addres = 1,
-    };
-    SendDataMsg_Modbus(&modbus_msg);
-#endif
+    Func_Calendar();
 
     for(;;)
     {

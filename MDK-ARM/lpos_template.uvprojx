@@ -698,6 +698,51 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Functions</GroupName>
+          <Files>
+            <File>
+              <FileName>func_leds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_buttons.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_buttons.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_calendar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_calendar.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_glasslcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_glasslcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_voltage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_voltage.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_temperature.c</FilePath>
+            </File>
+            <File>
+              <FileName>func_modbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Funcions\func_modbus.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Libraries</GroupName>
           <Files>
             <File>

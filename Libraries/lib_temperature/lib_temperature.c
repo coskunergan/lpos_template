@@ -23,6 +23,7 @@ static void StartTask(void *argument);
 extern void Temperature_Hw_Init(void);
 extern void Temperature_Hw_DeInit(void);
 extern int8_t Temperature_Read(void);
+extern void Func_Temperature(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -83,17 +84,7 @@ static void StartTask(void *argument)
     Temperature_Data_Frame_t *data_msg;
     uint8_t msg[TEMPERATURE_MSGQUEUE_OBJECT_SIZE];
 
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Data_Frame_t modbus_msg =
-    {
-        .data = eMODBUS_ADD_RO_REG,
-        .ptr = &GlobalStats.TemperatureLevelCelsius,
-        .length = 1,
-        .addres = 1004,
-    };
-    SendDataMsg_Modbus(&modbus_msg);
-#endif
+    Func_Temperature();
 
     for(;;)
     {

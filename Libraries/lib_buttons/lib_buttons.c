@@ -25,6 +25,7 @@ extern void Buttons_Hw_DeInit(Button_ID_t button_id);
 extern void Buttons_Hw_Init(Button_ID_t button_id);
 extern void Buttons_Hw_Enable(Button_ID_t button_id);
 extern void Buttons_Hw_Disable(Button_ID_t button_id);
+extern void Func_Buttons(void);
 
 Button_Cb_List_t Button_CbFunc_List[eBUTTON_ID_NUMBEROFTYPE];
 static struct button_cb_list_t Button_Func_Handle[BUTTON_CALLBACK_LIMIT];
@@ -94,17 +95,7 @@ static void StartTask(void *argument)
     uint8_t msg[BUTTONS_MSGQUEUE_OBJECT_SIZE];
     uint8_t i;
 
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Data_Frame_t modbus_msg =
-    {
-        .data = eMODBUS_ADD_RO_REG,
-        .ptr = &buttons_state,
-        .length = 1,
-        .addres = 1002,
-    };
-    SendDataMsg_Modbus(&modbus_msg);
-#endif
+    Func_Buttons();
 
     for(;;)
     {
@@ -174,12 +165,15 @@ static void StartTask(void *argument)
                             Timer_Arg[data_msg->button_id] = data_msg->button_id;
                             Timer_ID[data_msg->button_id] = osTimerNew(Timers_Callback, osTimerOnce, &Timer_Arg[data_msg->button_id], NULL);//create timer
                             osTimerStart(Timer_ID[data_msg->button_id], BUTTON_LONGPRESS_PERIOD_TICK);
-														DBG_PRINTF("Button %d Pressed", data_msg->button_id);
+                            DBG_PRINTF("Button %d Pressed", data_msg->button_id);
                         }
                         break;
                     case	eBUTTON_TIMER_STOP:
-                        osTimerDelete(Timer_ID[data_msg->button_id]); //destroy timer
-                        Timer_ID[data_msg->button_id] = NULL;
+                        if(Timer_ID[data_msg->button_id] != NULL)
+                        {
+                            osTimerDelete(Timer_ID[data_msg->button_id]); //destroy timer
+                            Timer_ID[data_msg->button_id] = NULL;
+                        }
                         break;
                     default:
                         break;

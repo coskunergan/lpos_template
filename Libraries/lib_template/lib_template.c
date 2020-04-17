@@ -22,7 +22,7 @@ extern void Template_Hw_DeInit(void);
 extern void Template_Hw_Enable(void);
 extern void Template_Hw_Disable(void);
 extern void Template_Operation(Template_Data_Frame_t *data_msg);
-
+extern void Func_Template(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -75,6 +75,8 @@ static void StartTask(void *argument)
     Template_Data_Frame_t *data_msg;
     Template_Config_Frame_t *config_msg;
     uint8_t msg[TEMPLATE_MSGQUEUE_OBJECT_SIZE];
+	
+	Func_Template();
 
     for(;;)
     {

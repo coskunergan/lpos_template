@@ -19,7 +19,7 @@ extern "C" {
 #include "main.h"
 
 #define BUTTONS_MSGQUEUE_OBJECT_SIZE (( sizeof(Buttons_Config_Frame_t) > sizeof(Buttons_Data_Frame_t) ) ? sizeof(Buttons_Config_Frame_t)  : sizeof(Buttons_Data_Frame_t))
-	
+
 typedef enum
 {
     eBUTTON_DATA_FRAME,
@@ -91,12 +91,13 @@ typedef struct
 #define BUTTON_CALLBACK_FUNC(_BUTTON_ID,_STATE) 									 	\
 		do{																															\
 		extern Button_Cb_List_t Button_CbFunc_List[];										\
+		Button_State_t State=_STATE;																		\
     static struct button_cb_list_t *s; 															\
     for(s = SysList_Head((list_t)&Button_CbFunc_List[_BUTTON_ID]);  \
             s != NULL; 																							\
             s = SysList_Item_Next(s)) 															\
     {																																\
-        s->vfPtr(_STATE); 																					\
+        s->vfPtr(State); 																						\
     }																																\
 	}while(0); 																												\
  

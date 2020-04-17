@@ -23,6 +23,7 @@ static void StartTask(void *argument);
 extern void Voltage_Hw_Init(void);
 extern void Voltage_Hw_DeInit(void);
 extern uint32_t Voltage_Read(void);
+extern void Func_Voltage(void);
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -83,17 +84,7 @@ static void StartTask(void *argument)
     Voltage_Data_Frame_t *data_msg;
     uint8_t msg[MSGQUEUE_OBJECT_SIZE];
 
-#ifdef LIB_MODBUS
-#include "..\..\Libraries\lib_modbus\lib_modbus.h"
-    Modbus_Data_Frame_t modbus_msg =
-    {
-        .data = eMODBUS_ADD_RO_REG,
-        .ptr = &GlobalStats.ReferanceVoltageLevelmV,
-        .length = 1,
-        .addres = 1003,
-    };
-    SendDataMsg_Modbus(&modbus_msg);
-#endif
+    Func_Voltage();
 
     for(;;)
     {
