@@ -24,6 +24,22 @@ void Func_Modbus(void)
     strcpy((char *)ucSlaveID, "Coskun ERGAN");
     ucModelNo = 0x10;
     usRegInputBuf[0] = &test;
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 10);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    Modbus_Config_Frame_t msg =
+    {
+        .config = eMODBUS_INIT,
+        .mode = MB_RTU,
+        .slave_addres = 10,
+        .port = 1,
+        .baudrate = 9600,
+        .parity = MB_PAR_EVEN
+    };
+    SendConfigMsg_Modbus(&msg);
+    DBG_PRINTF("Modbus lib boot done!");
     //-------------------------------------
 }
 /*********************************************************/

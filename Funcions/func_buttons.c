@@ -16,6 +16,13 @@ extern uint16_t buttons_state;
 /*********************************************************/
 void Func_Buttons(void)
 {
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 20);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    SendConfigMsg_Buttons(eBUTTON_INIT, eBUTTON_ID_1, NULL);
+    DBG_PRINTF("Button lib boot done!");
     //-------------------------------------
 #ifdef LIB_MODBUS
 #include "..\..\Libraries\lib_modbus\lib_modbus.h"

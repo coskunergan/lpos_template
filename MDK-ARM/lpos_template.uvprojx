@@ -691,9 +691,9 @@
               <FilePath>..\Core\Src\sys_list.c</FilePath>
             </File>
             <File>
-              <FileName>boot.c</FileName>
+              <FileName>sys_boot.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Src\boot.c</FilePath>
+              <FilePath>..\Core\Src\sys_boot.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -22,6 +22,14 @@ typedef struct
     uint8_t CPULevelPercent;
 } GlobalStats_t;
 
+typedef enum
+{
+    MUTEX_ADC,
+    MUTEX_UART
+} Hw_Mutex_t;
+
+osMutexId_t Get_Hw_Mutex(Hw_Mutex_t mt);
+
 #define LIB_LEDS
 #define LIB_BUZZER
 #define LIB_BUTTONS

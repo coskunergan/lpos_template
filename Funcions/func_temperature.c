@@ -16,6 +16,13 @@ extern GlobalStats_t GlobalStats;
 /*********************************************************/
 void Func_Temperature(void)
 {
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 70);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    SendConfigMsg_Temperature(eTEMPERATURE_INIT, Get_Hw_Mutex(MUTEX_ADC), 10000);
+    DBG_PRINTF("Temperature lib boot done!");
     //-------------------------------------
 #ifdef LIB_MODBUS
 #include "..\..\Libraries\lib_modbus\lib_modbus.h"

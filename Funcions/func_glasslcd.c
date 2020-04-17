@@ -56,6 +56,17 @@ static void Calendar_ISR(Calendar_Passed_t passed)
 /*********************************************************/
 void Func_Glasslcd(void)
 {
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 50);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    Glasslcd_Struct_t lcd;
+    SendConfigMsg_Glasslcd(eGLASSLCD_INIT);
+    lcd.command = eGLASSLCD_STRING;
+    memset(lcd.string, '8', 13);
+    SendDataMsg_Glasslcd(&lcd);
+    DBG_PRINTF("GlassLcd lib boot done!");
     //-------------------------------------
 #ifdef LIB_CALENDAR
     SendConfigMsg_Calendar(eCALENDAR_ADD_CALLBACK, NULL, Calendar_ISR);

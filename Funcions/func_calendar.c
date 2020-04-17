@@ -16,6 +16,23 @@ extern struct calendar_date date;
 /*********************************************************/
 void Func_Calendar(void)
 {
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 40);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    SendConfigMsg_Calendar(eCALENDAR_INIT, NULL, NULL);
+    static struct calendar_date date =
+    {
+        .second = 0,
+        .minute = 37,
+        .hour = 11,
+        .date = 5,  //6.day
+        .month = 04, //April
+        .year = 2020
+    };
+    SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
+    DBG_PRINTF("Calendar lib boot done!");
     //-------------------------------------
 #ifdef LIB_MODBUS
 #include "..\..\Libraries\lib_modbus\lib_modbus.h"

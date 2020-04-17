@@ -37,7 +37,7 @@ extern "C" {
 #include "stdlib.h"
 #include "string.h"
 #include "cmsis_os2.h"
-#include "boot.h"
+#include "sys_boot.h"
 #include "sys_lib.h"
 #include "sys_isr.h"
 #include "sys_list.h"

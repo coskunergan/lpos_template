@@ -37,6 +37,14 @@ static void Button_Blink_ISR(Button_State_t state)
 /*********************************************************/
 void Func_Leds(void)
 {
+    //---- Scheduler First Init Delay -----
+    osSemaphoreId_t InitTime_Sem = osSemaphoreNew(1, 0, NULL);
+    osSemaphoreAcquire(InitTime_Sem, 30);
+    osSemaphoreDelete(InitTime_Sem);
+    //-------------------------------------
+    SendConfigMsg_Led(eLED_INIT, eLED_ID_1);
+    SendConfigMsg_Led(eLED_INIT, eLED_ID_2);
+    DBG_PRINTF("Leds lib boot done!");
     //-------------------------------------
 #ifdef LIB_BUTTONS
     SendConfigMsg_Buttons(eBUTTON_ADD_CALLBACK, eBUTTON_ID_1, Button_Blink_ISR);
