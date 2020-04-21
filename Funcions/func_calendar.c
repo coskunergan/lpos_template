@@ -25,8 +25,8 @@ void Func_Calendar(void)
     static struct calendar_date date =
     {
         .second = 0,
-        .minute = 37,
-        .hour = 11,
+        .minute = 13,
+        .hour = 12,
         .date = 5,  //6.day
         .month = 04, //April
         .year = 2020

@@ -54,6 +54,15 @@ static void Calendar_ISR(Calendar_Passed_t passed)
 }
 #endif
 /*********************************************************/
+void Alert_Message(const char *pcFile, unsigned long ulLine)
+{
+    extern void Glasslcd_WriteStruct(Glasslcd_Struct_t *lcd);
+    Glasslcd_Struct_t lcd;
+    sprintf(lcd.string, "Err      %ld", ulLine);
+    lcd.command = eGLASSLCD_STRING;
+    Glasslcd_WriteStruct(&lcd);
+}
+/*********************************************************/
 void Func_Glasslcd(void)
 {
     //---- Scheduler First Init Delay -----

@@ -187,7 +187,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
         /*##-4- Configure Interrput ####################################################*/
 
         /* NVIC for USART */
-        HAL_NVIC_SetPriority(MB_UART_IRQn, UART_SUBPRIORITY, UART_PREEMPTPRIORITY);
+        HAL_NVIC_SetPriority(MB_UART_IRQn, UART_PREEMPTPRIORITY, UART_SUBPRIORITY);
         HAL_NVIC_EnableIRQ(MB_UART_IRQn);
 
         HAL_UARTEx_EnableStopMode(&UartHandle);
