@@ -14,7 +14,7 @@
 #include "..\..\Libraries\lib_modbus\modbus\include\mb.h"
 #include "..\..\Libraries\lib_modbus\modbus\include\mbport.h"
 
-#define UART_PREEMPTPRIORITY 	15
+#define UART_PREEMPTPRIORITY 	12
 #define UART_SUBPRIORITY  	0
 
 #define WAKEUP_FROM_ADDRESS
@@ -40,7 +40,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)	// fail interrupt
     MB_Uart_Fail_Counter++;
 //	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, GPIO_PIN_SET);// TEST FAIL
 //	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, GPIO_PIN_RESET);// TEST FAIL
-//	Error_Handler();
+//	vAssertCalled(__FILE__, __LINE__);
 }
 /*********************************************************/
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle) 	// trasmit done interrupt
@@ -102,7 +102,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
         UartHandle.Instance = MB_UART;
         if(HAL_UART_DeInit(&UartHandle) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         /*##-1- Enable peripherals and GPIO Clocks #################################*/
@@ -154,7 +154,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
                 UartHandle.Init.WordLength = UART_WORDLENGTH_9B;
                 break;
             default:
-                Error_Handler();
+                vAssertCalled(__FILE__, __LINE__);
                 break;
         }
 
@@ -173,7 +173,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
                 UartHandle.Init.StopBits = UART_STOPBITS_1;
                 break;
             default:
-                Error_Handler();
+                vAssertCalled(__FILE__, __LINE__);
                 break;
         }
         UartHandle.Init.Mode = UART_MODE_TX_RX;
@@ -181,7 +181,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
         UartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
         if(HAL_UART_Init(&UartHandle) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         /*##-4- Configure Interrput ####################################################*/
@@ -212,7 +212,7 @@ void Modbus_Hw_DeInit()
 
     if(HAL_UART_DeInit(&UartHandle) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 }
 /*********************************************************/

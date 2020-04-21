@@ -55,7 +55,7 @@ static void Lib_Init(void)
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 }
 /*********************************************************/
@@ -306,19 +306,19 @@ static void StartTask(void *argument)
                         if(MB_ENOERR != eMBInit(config_msg->mode, config_msg->slave_addres, config_msg->port, BAUD_CORRECTION(config_msg->baudrate), config_msg->parity))
                         {
                             /* Can not initialize. Add error handling code here. */
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         else
                         {
                             if(MB_ENOERR != eMBSetSlaveID(ucModelNo, MB_TRUE, ucSlaveID, sizeof(ucSlaveID)))
                             {
                                 /* Can not set slave id. Check arguments */
-                                Error_Handler();
+                                vAssertCalled(__FILE__, __LINE__);
                             }
                             else if(MB_ENOERR != eMBEnable())
                             {
                                 /* Enable failed. */
-                                Error_Handler();
+                                vAssertCalled(__FILE__, __LINE__);
                             }
                         }
                         break;
@@ -343,47 +343,50 @@ static void StartTask(void *argument)
                     case eMODBUS_TASKWOKEN:
                         break;
                     case eMODBUS_TIMER_INIT:
-                        MB_Timer_Period = data_msg->timer_period;
-                        MB_Timer_ID = osTimerNew(MB_Timer_Callback, osTimerOnce, NULL, NULL);
                         if(MB_Timer_ID  == NULL)
                         {
-                            Error_Handler();
+                            MB_Timer_Period = data_msg->timer_period;
+                            MB_Timer_ID = osTimerNew(MB_Timer_Callback, osTimerOnce, NULL, NULL);
+                            if(MB_Timer_ID  == NULL)
+                            {
+                                vAssertCalled(__FILE__, __LINE__);
+                            }
                         }
                         break;
                     case eMODBUS_TIMER_START:
                         if(osOK != osTimerStart(MB_Timer_ID, MB_Timer_Period))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         break;
                     case eMODBUS_TIMER_STOP:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerStop(MB_Timer_ID)))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);  // burada bazen patliyor.
                         }
                         break;
                     case eMODBUS_TIMER_CLOSE:
                         if(osTimerIsRunning(MB_Timer_ID) && (osOK != osTimerDelete(MB_Timer_ID)))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         break;
                     case eMODBUS_ADD_RO_REG:
                         if(MB_ENOERR != eMB_AddReadOnlyReg(data_msg->ptr, data_msg->addres, data_msg->length))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         break;
                     case eMODBUS_ADD_RW_REG:
                         if(MB_ENOERR != eMB_AddReadWriteReg(data_msg->ptr, data_msg->addres, data_msg->length))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         break;
                     case eMODBUS_DEL_REG:
                         if(MB_ENOERR != eMB_DeleteRegister(data_msg->addres, data_msg->length))
                         {
-                            Error_Handler();
+                            vAssertCalled(__FILE__, __LINE__);
                         }
                         break;
                     default:

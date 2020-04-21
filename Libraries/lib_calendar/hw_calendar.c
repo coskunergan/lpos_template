@@ -11,7 +11,7 @@
 
 #ifdef LIB_CALENDAR
 
-#define CALENDAR_PREEMPTPRIORITY 	15
+#define CALENDAR_PREEMPTPRIORITY 	13
 #define CALENDAR_SUBPRIORITY  	0
 
 /* subsecond number of bits */
@@ -48,7 +48,7 @@ void Calendar_Hw_Init()
     RCC_OscInitStruct.LSEState = RCC_LSE_ON;
     if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 
     /* -b- Select LSI as RTC clock source */
@@ -56,7 +56,7 @@ void Calendar_Hw_Init()
     PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
     if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 
     /*##-2- Enable the RTC peripheral Clock ####################################*/

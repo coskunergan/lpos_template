@@ -552,8 +552,6 @@ static void BSP_LCD_GLASS_Clear(void)
 /*********************************************************/
 static void LCD_MspInit(LCD_HandleTypeDef *hlcd)
 {
-    extern void Error_Handler(void);
-
     GPIO_InitTypeDef  gpioinitstruct = {0};
     RCC_OscInitTypeDef oscinitstruct = {0};
     RCC_PeriphCLKInitTypeDef periphclkstruct = {0};
@@ -567,7 +565,7 @@ static void LCD_MspInit(LCD_HandleTypeDef *hlcd)
     oscinitstruct.LSEState        = RCC_LSE_ON;
     if(HAL_RCC_OscConfig(&oscinitstruct) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 
     /*##-3- Select LSE as RTC clock source.##########################*/

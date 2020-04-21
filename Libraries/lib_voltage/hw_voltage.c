@@ -29,14 +29,14 @@ void Voltage_Hw_Init(void)
 
         if(HAL_ADC_DeInit(&hadc) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
         PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
         if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         hadc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
@@ -55,7 +55,7 @@ void Voltage_Hw_Init(void)
         hadc.Init.OversamplingMode = DISABLE;
         if(HAL_ADC_Init(&hadc) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
@@ -66,7 +66,7 @@ void Voltage_Hw_Init(void)
         sConfig.Offset = 0;
         if(HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         AdcInitialized = 1;
@@ -94,7 +94,7 @@ uint32_t Voltage_Read(void)
         if(HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED) !=  HAL_OK)
         {
             /* ADC Calibration Error */
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         /* configure adc channel */
@@ -106,7 +106,7 @@ uint32_t Voltage_Read(void)
         adcConf.Offset = 0;
         if(HAL_ADC_ConfigChannel(&hadc, &adcConf) != HAL_OK)
         {
-            Error_Handler();
+            vAssertCalled(__FILE__, __LINE__);
         }
 
         /* Start the conversion process */

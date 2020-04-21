@@ -43,6 +43,8 @@ extern "C" {
  *-----------------------------------------------------------
  */
 
+void vAssertCalled(const char *pcFile, unsigned long ulLine);
+
 /* Type definitions. */
 #define portCHAR		char
 #define portFLOAT		float

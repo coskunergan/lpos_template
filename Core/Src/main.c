@@ -97,7 +97,7 @@ int main(void)
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
-    MX_IWDG_Init();
+//    MX_IWDG_Init(); TEST
     MX_GPIO_Init();
 #if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
     MX_LPTIM1_Init();
@@ -179,7 +179,7 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
     if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
     /** Initializes the CPU, AHB and APB busses clocks
     */
@@ -192,13 +192,13 @@ void SystemClock_Config(void)
 
     if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
     PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_LPTIM1;
     PeriphClkInit.Lptim1ClockSelection = RCC_LPTIM1CLKSOURCE_LSE;
     if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 
     __HAL_RCC_PWR_CLK_ENABLE();
@@ -206,7 +206,7 @@ void SystemClock_Config(void)
     */
     if(HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 }
 
@@ -237,7 +237,7 @@ static void MX_LPTIM1_Init(void)
     hlptim1.Init.Input2Source = LPTIM_INPUT2SOURCE_GPIO;
     if(HAL_LPTIM_Init(&hlptim1) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
     /* USER CODE BEGIN LPTIM1_Init 2 */
     /* Enable EXTI Line interrupt on the LPTIM Wake-up Timer */
@@ -282,7 +282,7 @@ static void MX_IWDG_Init(void)
     hiwdg.Init.Reload = 4095;
     if(HAL_IWDG_Init(&hiwdg) != HAL_OK)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
     /* USER CODE BEGIN IWDG_Init 2 */
 
@@ -398,19 +398,6 @@ void StartIWDTTask(void *argument)
         //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_6);// test
     }
     /* USER CODE END 5 */
-}
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-    /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-    configASSERT(0);
-    while(1);
-    /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

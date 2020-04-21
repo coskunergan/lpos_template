@@ -47,7 +47,7 @@ static void Lib_Init(void)
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 }
 /*********************************************************/

@@ -11,7 +11,7 @@
 
 #ifdef LIB_BUTTONS
 
-#define BUTTON_PREEMPTPRIORITY 	15
+#define BUTTON_PREEMPTPRIORITY 	14
 #define BUTTON_SUBPRIORITY  	0
 
 extern uint16_t buttons_state;
@@ -83,7 +83,7 @@ Button_State_t Get_Button_State(Button_ID_t button_id)
             break;
     }
     if(state == ePRESSED)
-    {        
+    {
         SendDataMsg_Buttons(eBUTTON_TIMER_START, button_id);
         buttons_state |= 1UL << button_id;
     }

@@ -39,14 +39,17 @@
 #if( configUSE_LPTIMER_TICKLESS_IDLE == 1 )
 
 /*-----------------------------------------------------------*/
+#define LP_TICK_TIMER_STOP  __HAL_LPTIM_DISABLE(&hlptim1)
 
-#define LP_TICK_TIMER_STOP   __HAL_LPTIM_DISABLE(&hlptim1)
-
-#define LP_TICK_TIMER_START(period)  do{ \
-																						__HAL_LPTIM_ENABLE(&hlptim1); \
-																						__HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)(period)); \
-																						__HAL_LPTIM_START_CONTINUOUS(&hlptim1);	\
-																		}while(0) \
+#define LP_TICK_TIMER_START(period) \
+do{ \
+	__HAL_LPTIM_ENABLE(&hlptim1); \
+	__HAL_LPTIM_START_CONTINUOUS(&hlptim1);	\
+	__HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)(period)); \
+	while(!(__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_ARROK))) \
+	{ \
+	} \
+}while(0) \
  
 #define LP_TICK_TIMER_COUNTER_REGISTER  hlptim1.Instance->CNT
 
@@ -78,30 +81,37 @@ clears the interrupt, which is specific to the clock being used to generate the
 tick. */
 void LPTIM1_IRQHandler(void)
 {
-    /* Clear Autoreload match flag */
-    LP_TICK_TIMER_CLEAR_FLAG_ISR;
-
-    /* The CPU woke because of a tick. */
-    ulTickFlag = pdTRUE;
-
-    LP_TICK_TIMER_PRELOAD_REGISTER = (uint16_t)ulReloadValueForOneTick;
-
-    /* The next block of code is from the standard FreeRTOS tick interrupt
-    handler.  The standard handler is not called directly in case future
-    versions contain changes that make it no longer suitable for calling
-    here. */
-    (void) portSET_INTERRUPT_MASK_FROM_ISR();
+    if(__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_ARROK) != RESET)
     {
-        if(xTaskIncrementTick() != pdFALSE)
+        /* Clear Autoreload match flag */
+        LP_TICK_TIMER_CLEAR_FLAG_ISR;
+
+        /* The next block of code is from the standard FreeRTOS tick interrupt
+        handler.  The standard handler is not called directly in case future
+        versions contain changes that make it no longer suitable for calling
+        here. */
+        (void) portSET_INTERRUPT_MASK_FROM_ISR();
         {
-            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            if(xTaskIncrementTick() != pdFALSE)
+            {
+                portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            }
+
+            /* Just completely clear the interrupt mask on exit by passing 0 because
+            it is known that this interrupt will only ever execute with the lowest
+            possible interrupt priority. */
+        }
+        portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
+
+        LP_TICK_TIMER_PRELOAD_REGISTER = (uint16_t)ulReloadValueForOneTick;
+
+        while(!(__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_ARROK)))
+        {
         }
 
-        /* Just completely clear the interrupt mask on exit by passing 0 because
-        it is known that this interrupt will only ever execute with the lowest
-        possible interrupt priority. */
+        /* The CPU woke because of a tick. */
+        ulTickFlag = pdTRUE;
     }
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 }
 
 /*-----------------------------------------------------------*/
@@ -278,6 +288,8 @@ void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime)
 
         if(ulTickFlag != pdFALSE)
         {
+            //ulCountAfterSleep-=83; // wake up time elapsed value.
+
             /* Trap overflows before the next calculation. */
             configASSERT(ulReloadValueForOneTick >= (uint32_t) ulCountAfterSleep);
 

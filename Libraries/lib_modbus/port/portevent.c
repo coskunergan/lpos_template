@@ -77,7 +77,7 @@ uint8_t xMBPortEventPost(eMBEventType eEvent)
     if(osMessageQueueGetSpace(xQueueHdl) == 0)
     {
         bStatus = MB_TRUE;
-        //Error_Handler();
+        //vAssertCalled(__FILE__, __LINE__);
     }
     else
     {
