@@ -161,16 +161,14 @@ void SysTick_Handler(void)
 
     /* USER CODE END SysTick_IRQn 0 */
     HAL_IncTick();
-#if (configUSE_LPTIMER_TICKLESS_IDLE == 0)
-#if (INCLUDE_xTaskGetSchedulerState == 1)
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
     if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
     {
 #endif /* INCLUDE_xTaskGetSchedulerState */
         xPortSysTickHandler();
-#if (INCLUDE_xTaskGetSchedulerState == 1)
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
     }
 #endif /* INCLUDE_xTaskGetSchedulerState */
-#endif
     /* USER CODE BEGIN SysTick_IRQn 1 */
 
     /* USER CODE END SysTick_IRQn 1 */
@@ -183,6 +181,20 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32l4xx.s).                    */
 /******************************************************************************/
 
+/**
+  * @brief This function handles LPTIM1 global interrupt.
+  */
+void LPTIM1_IRQHandler(void)
+{
+    /* USER CODE BEGIN LPTIM1_IRQn 0 */
+
+    /* USER CODE END LPTIM1_IRQn 0 */
+    HAL_LPTIM_IRQHandler(&hlptim1);
+
+    /* USER CODE BEGIN LPTIM1_IRQn 1 */
+
+    /* USER CODE END LPTIM1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 

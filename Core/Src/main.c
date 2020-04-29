@@ -171,11 +171,11 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.LSIState = RCC_LSI_ON;
     RCC_OscInitStruct.MSIState = RCC_MSI_ON;
     RCC_OscInitStruct.MSICalibrationValue = 0;
-    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;//4MHz (14.5uA while run periodic 9 tasks.)
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;//4MHz (~14.5uA while run periodic 9 tasks.)
     //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_7;//8MHz
-    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_8;//16MHz  (15.0uA while run periodic 9 tasks.)
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_8;//16MHz  (~15.0uA while run periodic 9 tasks.)
     //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_9;//24MHz
-    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_10;//32MHz (18.0uA while run periodic 9 tasks.)
+    //RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_10;//32MHz (~18.0uA while run periodic 9 tasks.)
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
     if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
@@ -239,24 +239,8 @@ static void MX_LPTIM1_Init(void)
     {
         vAssertCalled(__FILE__, __LINE__);
     }
-    /* USER CODE BEGIN LPTIM1_Init 2 */
-    /* Enable EXTI Line interrupt on the LPTIM Wake-up Timer */
-    __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_IT();
 
-    /* Set TIMOUT bit to enable the timeout function */
-    hlptim1.Instance->CFGR |= LPTIM_CFGR_TIMOUT;
 
-    /* Enable Compare match interrupt */
-    __HAL_LPTIM_ENABLE_IT(&hlptim1, LPTIM_IT_ARRM);
-
-    /* Enable the Peripheral */
-    __HAL_LPTIM_ENABLE(&hlptim1);
-
-    /* Load the period value in the autoreload register */
-    __HAL_LPTIM_AUTORELOAD_SET(&hlptim1, (uint16_t)0);
-
-    /* Start timer in continuous mode */
-    __HAL_LPTIM_START_CONTINUOUS(&hlptim1);
     /* USER CODE END LPTIM1_Init 2 */
 
 }
@@ -372,6 +356,11 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);// For Lp Logic test
 }
 
 /* USER CODE BEGIN 4 */
