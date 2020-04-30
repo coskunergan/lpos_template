@@ -44,27 +44,10 @@
 #define lpCLOCK_INPUT_FREQUENCY 	( 32768UL )
 
 /* Running stop mod if greater than 3ms of the expected idle time */
-#define lpSTOP_MODE_LIMIT ( 0.003 )
-
-#ifndef configSYSTICK_CLOCK_HZ
-#define configSYSTICK_CLOCK_HZ configCPU_CLOCK_HZ
-/* Ensure the SysTick is clocked at the same frequency as the core. */
-#define portNVIC_SYSTICK_CLK_BIT	( 1UL << 2UL )
-#else
-/* The way the SysTick is clocked is not modified in case it is not the same
-as the core. */
-#define portNVIC_SYSTICK_CLK_BIT	( 0 )
-#endif
+#define lpSTOP_MODE_LIMIT_S ( 0.003 )
 
 #define portNVIC_SYSTICK_LOAD_REG			( * ( ( volatile uint32_t * ) 0xe000e014 ) )
-#define portNVIC_SYSTICK_CTRL_REG			( * ( ( volatile uint32_t * ) 0xe000e010 ) )
 #define portNVIC_SYSTICK_CURRENT_VALUE_REG	( * ( ( volatile uint32_t * ) 0xe000e018 ) )
-/* ...then bits in the registers. */
-#define portNVIC_SYSTICK_INT_BIT			( 1UL << 1UL )
-#define portNVIC_SYSTICK_ENABLE_BIT			( 1UL << 0UL )
-#define portNVIC_PENDSVCLEAR_BIT 			( 1UL << 27UL )
-#define portNVIC_PEND_SYSTICK_CLEAR_BIT		( 1UL << 25UL )
-#define portNVIC_SYSTICK_COUNT_FLAG_BIT		( 1UL << 16UL )
 
 /* Calculate how many clock increments make up a single tick period. */
 static const uint32_t ulReloadValueForOneTick = (lpCLOCK_INPUT_FREQUENCY / configTICK_RATE_HZ);
@@ -87,15 +70,12 @@ extern LPTIM_HandleTypeDef hlptim1;
 void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 {
     PIN_TRIG(GPIOA, GPIO_PIN_0);
-
-    xPortSysTickHandler();
-
     ulTickFlag = pdTRUE;
 }
 /*************************************************************/
 void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
 {
-    if(*ulExpectedIdleTime > (lpSTOP_MODE_LIMIT * configTICK_RATE_HZ))
+    if(*ulExpectedIdleTime > (lpSTOP_MODE_LIMIT_S * configTICK_RATE_HZ))
     {
         PIN_TRIG(GPIOA, GPIO_PIN_0);
 
@@ -114,7 +94,6 @@ void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
 
         PIN_TRIG(GPIOA, GPIO_PIN_1);
 
-        portNVIC_SYSTICK_CURRENT_VALUE_REG = 0;
         //HAL_PWREx_EnterSTOP0Mode(PWR_SLEEPENTRY_WFI);// 140uA idle current
         //HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI); // 32uA idle current
         HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI); // 6.7uA idle current
@@ -127,7 +106,7 @@ void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
 /*************************************************************/
 void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
 {
-    uint32_t ulCountAfterSleep;
+    uint32_t ulCountAfterSleep, temp;
 
     if(xReloadIdleTime > 0)
     {
@@ -146,20 +125,27 @@ void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
         __dsb(portSY_FULL_READ_WRITE);
         __isb(portSY_FULL_READ_WRITE);
 
-        portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT | portNVIC_SYSTICK_INT_BIT);
-
         if(ulTickFlag != pdFALSE)
         {
+						// wakeup from lp timer interrput.
             PIN_TRIG(GPIOA, GPIO_PIN_3); // timer kesme ile uyandi
-
-            portNVIC_SYSTICK_CURRENT_VALUE_REG = *ulExpectedIdleTime * (configCPU_CLOCK_HZ / configTICK_RATE_HZ);
+            portNVIC_SYSTICK_LOAD_REG = 0UL;
         }
         else
         {
-            PIN_TRIG(GPIOA, GPIO_PIN_4);  // harici kesmeler ile uyandi
-
-            portNVIC_SYSTICK_CURRENT_VALUE_REG = (ulCountAfterSleep * ulReloadValueForOneTick) * (configCPU_CLOCK_HZ / configTICK_RATE_HZ);
+						// wakeup from externel interrput.
+            PIN_TRIG(GPIOA, GPIO_PIN_4);  
+            temp = ((ulCountAfterSleep * (configCPU_CLOCK_HZ / configTICK_RATE_HZ)) / ulReloadValueForOneTick);
+            if(portNVIC_SYSTICK_CURRENT_VALUE_REG > temp)
+            {
+                portNVIC_SYSTICK_LOAD_REG	= portNVIC_SYSTICK_CURRENT_VALUE_REG - temp;
+            }
+            else
+            {
+                portNVIC_SYSTICK_LOAD_REG = 0UL;
+            }
         }
+        portNVIC_SYSTICK_CURRENT_VALUE_REG = 0UL;
     }
 }
 /*************************************************************/
