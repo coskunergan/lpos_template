@@ -44,7 +44,7 @@
 #define lpCLOCK_INPUT_FREQUENCY 	( 32768UL )
 
 /* Running stop mod if greater than 3ms of the expected idle time */
-#define lpSTOP_MODE_LIMIT_S ( 0.003 )
+#define lpSTOP_MODE_LIMIT_S ( 0.005 )
 
 #define portNVIC_SYSTICK_LOAD_REG			( * ( ( volatile uint32_t * ) 0xe000e014 ) )
 #define portNVIC_SYSTICK_CURRENT_VALUE_REG	( * ( ( volatile uint32_t * ) 0xe000e018 ) )
@@ -77,9 +77,9 @@ void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
 {
     if(*ulExpectedIdleTime > (lpSTOP_MODE_LIMIT_S * configTICK_RATE_HZ))
     {
-        PIN_TRIG(GPIOA, GPIO_PIN_0);
+        PIN_TRIG(GPIOA, GPIO_PIN_1);
 
-        xReloadIdleTime = *ulExpectedIdleTime;
+        xReloadIdleTime = *ulExpectedIdleTime - 3UL; // 3ms include wakeup time to 2.6mS. Normaly -> (*ulExpectedIdleTime - 1UL)
 
         *ulExpectedIdleTime = 0;
 
@@ -91,8 +91,6 @@ void PreSleepProcessing(uint32_t *ulExpectedIdleTime)
         HAL_LPTIM_TimeOut_Start_IT(&hlptim1, USHRT_MAX, xReloadIdleTime * ulReloadValueForOneTick);
 
         ulTickFlag = pdFALSE;
-
-        PIN_TRIG(GPIOA, GPIO_PIN_1);
 
         //HAL_PWREx_EnterSTOP0Mode(PWR_SLEEPENTRY_WFI);// 140uA idle current
         //HAL_PWREx_EnterSTOP1Mode(PWR_STOPENTRY_WFI); // 32uA idle current
@@ -119,7 +117,7 @@ void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
             ulCountAfterSleep = HAL_LPTIM_ReadCounter(&hlptim1);
         }
         while(ulCountAfterSleep != HAL_LPTIM_ReadCounter(&hlptim1));
-        HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);
+        HAL_LPTIM_TimeOut_Stop_IT(&hlptim1);			
 
         __disable_irq();
         __dsb(portSY_FULL_READ_WRITE);
@@ -127,14 +125,14 @@ void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
 
         if(ulTickFlag != pdFALSE)
         {
-						// wakeup from lp timer interrput.
-            PIN_TRIG(GPIOA, GPIO_PIN_3); // timer kesme ile uyandi
+            // wakeup from lp timer interrput.
+            PIN_TRIG(GPIOA, GPIO_PIN_3); 
             portNVIC_SYSTICK_LOAD_REG = 0UL;
         }
         else
         {
-						// wakeup from externel interrput.
-            PIN_TRIG(GPIOA, GPIO_PIN_4);  
+            // wakeup from externel interrput.
+            PIN_TRIG(GPIOA, GPIO_PIN_4);
             temp = ((ulCountAfterSleep * (configCPU_CLOCK_HZ / configTICK_RATE_HZ)) / ulReloadValueForOneTick);
             if(portNVIC_SYSTICK_CURRENT_VALUE_REG > temp)
             {
@@ -142,6 +140,7 @@ void PostSleepProcessing(uint32_t *ulExpectedIdleTime)
             }
             else
             {
+                PIN_TRIG(GPIOA, GPIO_PIN_5);
                 portNVIC_SYSTICK_LOAD_REG = 0UL;
             }
         }
