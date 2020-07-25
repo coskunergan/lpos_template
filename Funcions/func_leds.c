@@ -14,6 +14,32 @@ extern uint16_t leds_state;
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+#ifdef LIB_VALVE
+#include "..\..\Libraries\lib_valve\lib_valve.h"
+static void Valve_Event(ValveInfo_t status)
+{
+    switch(status)
+    {
+        case VALVE_INFO_BEGIN_OPEN:
+            SendDataMsg_Led(eLED_ID_1, eLED_OFF);
+            SendDataMsg_Led(eLED_ID_2, eLED_ON);
+            break;
+        case VALVE_INFO_BEGIN_CLOSE:
+            SendDataMsg_Led(eLED_ID_1, eLED_ON);
+            SendDataMsg_Led(eLED_ID_2, eLED_OFF);
+            break;
+        case VALVE_INFO_CLOSED:
+        case VALVE_INFO_OPENED:
+        case VALVE_INFO_TIMEOUT:
+            SendDataMsg_Led(eLED_ID_1, eLED_OFF);
+            SendDataMsg_Led(eLED_ID_2, eLED_OFF);
+            break;
+        default:
+            break;
+    }
+}
+#endif
+/*********************************************************/
 #ifdef LIB_BUTTONS
 #include "..\Libraries\lib_buttons\lib_buttons.h"
 static void Button_Blink_ISR(Button_State_t state)
@@ -60,6 +86,11 @@ void Func_Leds(void)
         .addres = 1001,
     };
     SendDataMsg_Modbus(&modbus_msg);
+#endif
+    //-------------------------------------
+#ifdef LIB_VALVE
+#include "..\..\Libraries\lib_valve\lib_valve.h"
+    SendConfigMsg_Valve(eVALVE_ADD_CALLBACK, Valve_Event);
 #endif
     //-------------------------------------
 }

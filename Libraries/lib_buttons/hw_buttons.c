@@ -187,7 +187,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_1_PIN;
             GPIO_InitStruct.Pull = BUTTON_1_PULL;
             HAL_GPIO_Init(BUTTON_1_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_1_PORT, BUTTON_1_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_1], Button_1_ISR, BUTTON_1_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_1_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -197,7 +196,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_2_PIN;
             GPIO_InitStruct.Pull = BUTTON_2_PULL;
             HAL_GPIO_Init(BUTTON_2_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_2_PORT, BUTTON_2_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_2], Button_2_ISR, BUTTON_2_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_2_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -207,7 +205,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_3_PIN;
             GPIO_InitStruct.Pull = BUTTON_3_PULL;
             HAL_GPIO_Init(BUTTON_3_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_3_PORT, BUTTON_3_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_3], Button_3_ISR, BUTTON_3_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_3_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -217,7 +214,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_4_PIN;
             GPIO_InitStruct.Pull = BUTTON_4_PULL;
             HAL_GPIO_Init(BUTTON_4_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_4_PORT, BUTTON_4_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_4], Button_4_ISR, BUTTON_4_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_4_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -227,7 +223,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_5_PIN;
             GPIO_InitStruct.Pull = BUTTON_5_PULL;
             HAL_GPIO_Init(BUTTON_5_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_5_PORT, BUTTON_5_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_5], Button_5_ISR, BUTTON_5_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_5_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -237,7 +232,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_6_PIN;
             GPIO_InitStruct.Pull = BUTTON_6_PULL;
             HAL_GPIO_Init(BUTTON_6_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_6_PORT, BUTTON_6_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_6], Button_6_ISR, BUTTON_6_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_6_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -247,7 +241,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_7_PIN;
             GPIO_InitStruct.Pull = BUTTON_7_PULL;
             HAL_GPIO_Init(BUTTON_7_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_7_PORT, BUTTON_7_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_7], Button_7_ISR, BUTTON_7_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_7_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -257,7 +250,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_8_PIN;
             GPIO_InitStruct.Pull = BUTTON_8_PULL;
             HAL_GPIO_Init(BUTTON_8_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_8_PORT, BUTTON_8_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_8], Button_8_ISR, BUTTON_8_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_8_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -267,7 +259,6 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_9_PIN;
             GPIO_InitStruct.Pull = BUTTON_9_PULL;
             HAL_GPIO_Init(BUTTON_9_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_9_PORT, BUTTON_9_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_9], Button_9_ISR, BUTTON_9_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_9_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);
@@ -277,39 +268,30 @@ void Buttons_Hw_Init(Button_ID_t button_id)
             GPIO_InitStruct.Pin = BUTTON_1_PIN;
             GPIO_InitStruct.Pull = BUTTON_1_PULL;
             HAL_GPIO_Init(BUTTON_1_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_1_PORT, BUTTON_1_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_2_PIN;
             GPIO_InitStruct.Pull = BUTTON_2_PULL;
             HAL_GPIO_Init(BUTTON_2_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_2_PORT, BUTTON_2_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_3_PIN;
             GPIO_InitStruct.Pull = BUTTON_3_PULL;
             HAL_GPIO_Init(BUTTON_3_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_3_PORT, BUTTON_3_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_4_PIN;
             GPIO_InitStruct.Pull = BUTTON_4_PULL;
             HAL_GPIO_Init(BUTTON_4_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_4_PORT, BUTTON_4_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_5_PIN;
             GPIO_InitStruct.Pull = BUTTON_5_PULL;
             HAL_GPIO_Init(BUTTON_5_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_5_PORT, BUTTON_5_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_6_PIN;
             GPIO_InitStruct.Pull = BUTTON_6_PULL;
             HAL_GPIO_Init(BUTTON_6_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_6_PORT, BUTTON_6_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_7_PIN;
             GPIO_InitStruct.Pull = BUTTON_7_PULL;
             HAL_GPIO_Init(BUTTON_7_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_7_PORT, BUTTON_7_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_8_PIN;
             GPIO_InitStruct.Pull = BUTTON_8_PULL;
             HAL_GPIO_Init(BUTTON_8_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_8_PORT, BUTTON_8_PIN, GPIO_PIN_RESET);
             GPIO_InitStruct.Pin = BUTTON_9_PIN;
             GPIO_InitStruct.Pull = BUTTON_9_PULL;
             HAL_GPIO_Init(BUTTON_9_PORT, &GPIO_InitStruct);
-            HAL_GPIO_WritePin(BUTTON_9_PORT, BUTTON_9_PIN, GPIO_PIN_RESET);
 
             SysIsr_Add(&Button_Isr_Handle[eBUTTON_ID_1], Button_1_ISR, BUTTON_1_ISR_HANDLER);
             HAL_NVIC_SetPriority(BUTTON_1_ISR_ADR, BUTTON_PREEMPTPRIORITY, BUTTON_SUBPRIORITY);

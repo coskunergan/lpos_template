@@ -15,6 +15,8 @@ FIRST_START_OS(Lib_Init);
 #define	BUTTON_CALLBACK_LIMIT 32
 #define BUTTON_LONGPRESS_PERIOD_TICK  3000
 
+static uint8_t msg[BUTTONS_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 
 uint16_t buttons_state;
@@ -91,8 +93,7 @@ void Timers_Callback(void *arg)
 static void StartTask(void *argument)
 {
     Buttons_Config_Frame_t *config_msg;
-    Buttons_Data_Frame_t *data_msg;
-    uint8_t msg[BUTTONS_MSGQUEUE_OBJECT_SIZE];
+    Buttons_Data_Frame_t *data_msg;    
     uint8_t i;
 
     Func_Buttons();

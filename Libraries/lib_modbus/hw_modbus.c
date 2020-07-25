@@ -128,6 +128,7 @@ void Modbus_Hw_Init(uint8_t port, uint32_t baudrate, uint8_t databit, uint8_t pa
 
         GPIO_InitStruct.Pin       = MB_UART_RX_PIN;
         GPIO_InitStruct.Alternate = MB_UART_RX_AF;
+				GPIO_InitStruct.Pull      = MB_UART_RX_PULL;				
         HAL_GPIO_Init(MB_UART_RX_PORT, &GPIO_InitStruct);
 
         GPIO_InitStruct.Pin = MB_UART_EN_PIN;

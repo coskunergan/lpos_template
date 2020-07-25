@@ -26,6 +26,8 @@ FIRST_START_OS(Lib_Init);
 //! Number of seconds in a minute
 #define SECS_PER_MINUTE 60UL
 
+static uint8_t msg[CALENDAR_MSGQUEUE_OBJECT_SIZE];
+
 //! Number of days in a specified month. Index 1 for leap year, else 0.
 const uint8_t month[2][12] =
 {
@@ -599,8 +601,7 @@ void calendar_add_second_to_date(struct calendar_date *date)
 /*********************************************************/
 static void StartTask(void *argument)
 {
-    Calendar_Config_Frame_t *config_msg;
-    uint8_t msg[CALENDAR_MSGQUEUE_OBJECT_SIZE];
+    Calendar_Config_Frame_t *config_msg;    
     uint8_t i;
 
     Func_Calendar();

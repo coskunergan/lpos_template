@@ -13,6 +13,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
 
+static uint8_t msg[TEMPLATE_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 
 static void StartTask(void *argument);
@@ -38,7 +40,7 @@ static void Lib_Init(void)
     };
     if(osThreadNew(StartTask, NULL, &defaultTask_attributes) == NULL)
     {
-        Error_Handler();
+        vAssertCalled(__FILE__, __LINE__);
     }
 }
 /*********************************************************/
@@ -74,9 +76,8 @@ static void StartTask(void *argument)
 {
     Template_Data_Frame_t *data_msg;
     Template_Config_Frame_t *config_msg;
-    uint8_t msg[TEMPLATE_MSGQUEUE_OBJECT_SIZE];
-	
-	Func_Template();
+
+    Func_Template();
 
     for(;;)
     {
@@ -98,7 +99,7 @@ static void StartTask(void *argument)
                         break;
                     case eTEMPLATE_DISABLE:
                         Template_Hw_Disable();
-                        break;						
+                        break;
                     default:
                         break;
                 }

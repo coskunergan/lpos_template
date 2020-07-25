@@ -55,6 +55,7 @@ typedef struct
 osStatus_t SendConfigMsg_Temperature(Temperature_Config_t config, osMutexId_t hw_mutex, uint32_t period_ms);
 osStatus_t SendDataMsg_Temperature(Temperature_Data_t data);
 int8_t Temperature_Read(void);
+void Temperature_Refresh_Event(void);
 
 #ifdef __cplusplus
 }

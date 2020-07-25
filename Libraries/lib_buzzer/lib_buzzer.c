@@ -13,6 +13,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  8
 
+static uint8_t msg[BUZZER_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 
 static void StartTask(void *argument);
@@ -73,7 +75,6 @@ static void StartTask(void *argument)
 {
     Buzzer_Data_Frame_t *data_msg;
     Buzzer_Config_Frame_t *config_msg;
-    uint8_t msg[BUZZER_MSGQUEUE_OBJECT_SIZE];
     osSemaphoreId_t Buzzer_Sem = osSemaphoreNew(1, 0, NULL);
 
     Func_Buzzer();

@@ -14,6 +14,17 @@ extern GlobalStats_t GlobalStats;
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+void Voltage_Refresh_Event(void)
+{
+#ifdef LIB_LORAWAN
+#include "..\..\Libraries\lib_lorawan\lib_lorawan.h"
+    Lorawan_Data_Frame_t msg;
+    msg.state = eLORAWAN_SET_100MV_BATTERY;
+    msg.value = (GlobalStats.ReferanceVoltageLevelmV / 100);
+    SendDataMsg_Lorawan(&msg);
+#endif
+}
+/*********************************************************/
 void Func_Voltage(void)
 {
     //---- Scheduler First Init Delay -----

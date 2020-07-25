@@ -10,9 +10,18 @@
 
 #ifdef LIB_CALENDAR
 
-extern struct calendar_date date;
+static struct calendar_date date;
 /*********************************************************/
 /*********************************************************/
+/*********************************************************/
+#ifdef LIB_LORAWAN
+#include "..\..\Libraries\lib_lorawan\lib_lorawan.h"
+static void LoraTimeUpdate(uint32_t timestamp)
+{
+    calendar_timestamp_to_date(timestamp, &date);
+    SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
+}
+#endif
 /*********************************************************/
 void Func_Calendar(void)
 {
@@ -22,15 +31,12 @@ void Func_Calendar(void)
     osSemaphoreDelete(InitTime_Sem);
     //-------------------------------------
     SendConfigMsg_Calendar(eCALENDAR_INIT, NULL, NULL);
-    static struct calendar_date date =
-    {
-        .second = 0,
-        .minute = 2,
-        .hour = 9,
-        .date = 5,  //6.day
-        .month = 04, //April
-        .year = 2020
-    };
+    date.second = 0;
+    date.minute = 50;
+    date.hour = 9;
+    date.date = 24; //25.day
+    date.month = 6; //July
+    date.year = 2020;
     SendConfigMsg_Calendar(eCALENDAR_SETTIME, &date, NULL);
     DBG_PRINTF("Calendar lib boot done!");
     //-------------------------------------
@@ -44,6 +50,14 @@ void Func_Calendar(void)
         .addres = 1,
     };
     SendDataMsg_Modbus(&modbus_msg);
+#endif
+    //-------------------------------------
+#ifdef LIB_LORAWAN
+    Lorawan_Config_Frame_t msg;
+    msg.state = eLORAWAN_ADD_CALLBACK;
+    msg.Callback_Type = eLORAWAN_TIMEUPDATE_CB;
+    msg.vfPtr = LoraTimeUpdate;
+    SendConfigMsg_Lorawan(&msg);
 #endif
     //-------------------------------------
 }

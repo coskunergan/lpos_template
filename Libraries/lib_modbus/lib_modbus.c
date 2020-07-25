@@ -19,6 +19,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  8
 
+static uint8_t msg[MODBUS_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 
 uint8_t ucSlaveID[16] = {0};
@@ -288,8 +290,7 @@ void MB_Timer_Callback(void *arg)
 static void StartTask(void *argument)
 {
     Modbus_Data_Frame_t *data_msg;
-    Modbus_Config_Frame_t *config_msg;
-    uint8_t msg[MODBUS_MSGQUEUE_OBJECT_SIZE];
+    Modbus_Config_Frame_t *config_msg;    
 
     Func_Modbus();
 

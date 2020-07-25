@@ -162,6 +162,7 @@ extern "C" {
 #define MB_UART_TX_PORT										GPIOC
 #define MB_UART_TX_AF                     GPIO_AF8_LPUART1
 #define MB_UART_RX_PIN                    GPIO_PIN_0
+#define MB_UART_RX_PULL                   GPIO_PULLUP
 #define MB_UART_RX_PORT										GPIOC
 #define MB_UART_RX_AF                     GPIO_AF8_LPUART1
 #define MB_UART_EN_PIN                    GPIO_PIN_9

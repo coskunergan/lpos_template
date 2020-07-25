@@ -13,6 +13,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  8
 
+static uint8_t msg[LED_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 
 uint16_t leds_state;
@@ -75,8 +77,7 @@ osStatus_t SendConfigMsg_Led(Led_Config_t config, Led_ID_t led_id)
 static void StartTask(void *argument)
 {
     Led_Data_Frame_t *data_msg;
-    Led_Config_Frame_t *config_msg;
-    uint8_t msg[LED_MSGQUEUE_OBJECT_SIZE];
+    Led_Config_Frame_t *config_msg;    
 
     Func_Leds();
 

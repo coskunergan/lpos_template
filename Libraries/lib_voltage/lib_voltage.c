@@ -13,6 +13,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
 
+static uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
 static osMutexId_t *Hw_Mutex = NULL;
@@ -81,8 +83,7 @@ static void Timer_Callback(void *arg)
 static void StartTask(void *argument)
 {
     Voltage_Config_Frame_t *config_msg;
-    Voltage_Data_Frame_t *data_msg;
-    uint8_t msg[MSGQUEUE_OBJECT_SIZE];
+    Voltage_Data_Frame_t *data_msg;    
 
     Func_Voltage();
 
@@ -130,6 +131,7 @@ static void StartTask(void *argument)
                         GlobalStats.ReferanceVoltageLevelmV = Voltage_Read();
                         DBG_PRINTF("Voltage: %d mV", GlobalStats.ReferanceVoltageLevelmV);
                         osMutexRelease(*Hw_Mutex);
+												Voltage_Refresh_Event();
                         break;
                     default:
                         break;

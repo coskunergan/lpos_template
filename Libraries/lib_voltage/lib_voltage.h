@@ -55,6 +55,7 @@ typedef struct
 osStatus_t SendConfigMsg_Voltage(Voltage_Config_t config, osMutexId_t hw_mutex,  uint32_t period_ms);
 osStatus_t SendDataMsg_Voltage(Voltage_Data_t data);
 uint32_t Voltage_Read(void);
+void Voltage_Refresh_Event(void);
 
 #ifdef __cplusplus
 }

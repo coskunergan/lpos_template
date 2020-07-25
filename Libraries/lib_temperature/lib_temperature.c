@@ -13,6 +13,8 @@ FIRST_START_OS(Lib_Init);
 
 #define MSGQUEUE_OBJECTS  3
 
+static uint8_t msg[TEMPERATURE_MSGQUEUE_OBJECT_SIZE];
+
 static osMessageQueueId_t mq_id;
 static osTimerId_t Timer_ID;
 static osMutexId_t *Hw_Mutex = NULL;
@@ -82,7 +84,6 @@ static void StartTask(void *argument)
 {
     Temperature_Config_Frame_t *config_msg;
     Temperature_Data_Frame_t *data_msg;
-    uint8_t msg[TEMPERATURE_MSGQUEUE_OBJECT_SIZE];
 
     Func_Temperature();
 
@@ -130,6 +131,7 @@ static void StartTask(void *argument)
                         GlobalStats.TemperatureLevelCelsius = Temperature_Read();
                         DBG_PRINTF("Temperature: %d C", GlobalStats.TemperatureLevelCelsius);
                         osMutexRelease(*Hw_Mutex);
+                        Temperature_Refresh_Event();
                         break;
                     default:
                         break;

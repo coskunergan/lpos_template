@@ -92,7 +92,7 @@ typedef struct
 		do{																															\
 		extern Button_Cb_List_t Button_CbFunc_List[];										\
 		Button_State_t State=_STATE;																		\
-    static struct button_cb_list_t *s; 															\
+    struct button_cb_list_t *s; 																		\
     for(s = SysList_Head((list_t)&Button_CbFunc_List[_BUTTON_ID]);  \
             s != NULL; 																							\
             s = SysList_Item_Next(s)) 															\
